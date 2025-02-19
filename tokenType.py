@@ -1,11 +1,11 @@
 from enum import Enum, auto
 
 class TokenType(Enum):
-    #Single-character tokens.
+    # Tokens de un solo carácter.
     PLUS        = auto()
     MINUS       = auto()
     TIMES       = auto()
-    DIVIDE      = auto() #Need to use a special case because comments use this character.
+    DIVIDE      = auto()  # Se usa de forma especial porque '/' también se usa en comentarios.
     LT          = auto()
     ASSIGN      = auto()  
     SEMI        = auto()
@@ -18,7 +18,7 @@ class TokenType(Enum):
     GT          = auto()
     GROW        = auto()
 
-    #One or two character tokens.
+    # Tokens de uno o dos caracteres.
     LE          = auto()
     GE          = auto()
     EQ          = auto()
@@ -27,13 +27,13 @@ class TokenType(Enum):
     LOR         = auto()
     N           = auto()   
 
-    #Literals.
+    # Literales.
     IDENTIFIER  = auto()
     INTEGER     = auto()
     FLOAT       = auto()
     CHAR        = auto()
 
-    #Keywords.
+    # Palabras clave.
     CONST       = auto()
     VAR         = auto() 
     PRINT       = auto() 
@@ -46,15 +46,15 @@ class TokenType(Enum):
     FUNC        = auto() 
     IMPORT      = auto()
     TRUE        = auto()
-    FALSE       = auto() 
- 
+    FALSE       = auto()
+
 SINGLE_CHAR_TOKENS = {
-            '+': TokenType.PLUS, '-': TokenType.MINUS, '*': TokenType.TIMES,
-            '/': TokenType.DIVIDE, '<': TokenType.LT, '=': TokenType.ASSIGN,
-            ';': TokenType.SEMI, '(': TokenType.LPAREN, ')': TokenType.RPAREN,
-            '{': TokenType.LBRACE, '}': TokenType.RBRACE, ',': TokenType.COMMA,
-            '`': TokenType.DEREF, '>': TokenType.GT, '^': TokenType.GROW
-        }
+    '+': TokenType.PLUS, '-': TokenType.MINUS, '*': TokenType.TIMES,
+    '/': TokenType.DIVIDE, '<': TokenType.LT, '=': TokenType.ASSIGN,
+    ';': TokenType.SEMI, '(': TokenType.LPAREN, ')': TokenType.RPAREN,
+    '{': TokenType.LBRACE, '}': TokenType.RBRACE, ',': TokenType.COMMA,
+    '`': TokenType.DEREF, '>': TokenType.GT, '^': TokenType.GROW
+}
 
 TOKEN_LITERALS = {
     TokenType.IDENTIFIER: r'[a-zA-Z_][a-zA-Z0-9_]*',
