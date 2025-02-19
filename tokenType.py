@@ -25,7 +25,6 @@ class TokenType(Enum):
     NE          = auto()
     LAND        = auto()
     LOR         = auto()
-    N           = auto()   
 
     # Literales.
     IDENTIFIER  = auto()

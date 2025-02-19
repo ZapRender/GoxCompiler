@@ -1,19 +1,18 @@
+import sys
 from scanner import Scanner
 
 class Gox:
     def __init__(self):
-        # Indica si se encontró un error en el código.
         self.hadError = False
 
     def _run(self, content: str):
-        # Se pasa self.errorHandler para que el Scanner notifique errores.
         scanner = Scanner(content, self.errorHandler)
         tokens = scanner.scanTokens()
-        
+
+        # Imprime cada token
         for token in tokens:
             print(token.toString())
-        
-        # Si se detectó un error en el escaneo, lo marcamos aquí.
+
         if scanner.hadError:
             self.hadError = True
 
@@ -23,9 +22,6 @@ class Gox:
                 bytes_content = file.read()
             content = bytes_content.decode()
             self._run(content)
-            
-            if self.hadError:
-                exit(65)
         except (TypeError, ValueError) as e:
             print(f"Error: {e}")
             exit(1)
@@ -38,5 +34,11 @@ class Gox:
         self.hadError = True
 
 if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        exit(1)
+    file_path = sys.argv[1]
     gox = Gox()
-    gox._runFile("factorize.gox")
+    gox._runFile(file_path)
+    
+    if gox.hadError:
+        exit(65)

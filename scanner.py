@@ -35,23 +35,36 @@ class Scanner:
             else:
                 self.addToken(TokenType.DIVIDE)
                 return
+        # Tokens de dos caracteres
+        elif c == '!' and self.match('='):
+            self.addToken(TokenType.NE)
+            return
+
+        elif c == '=' and self.match('='):
+            self.addToken(TokenType.EQ)
+            return
+
+        elif c == '<' and self.match('='):
+            self.addToken(TokenType.LE)
+            return
+
+        elif c == '>' and self.match('='):
+            self.addToken(TokenType.GT)
+            return 
+
+        elif c == '&' and self.match('&'):
+            self.addToken(TokenType.LAND)
+            return 
+
+        elif c == '|' and self.match('|'):
+            self.addToken(TokenType.LOR)
+            return
 
         # Tokens de un solo carácter
         if c in SINGLE_CHAR_TOKENS:
             self.addToken(SINGLE_CHAR_TOKENS[c])
-        # Tokens de dos caracteres
-        elif c == '!':
-            self.addToken(TokenType.NE if self.match('=') else TokenType.N)
-        elif c == '=':
-            self.addToken(TokenType.EQ if self.match('=') else TokenType.ASSIGN)
-        elif c == '<':
-            self.addToken(TokenType.LE if self.match('=') else TokenType.LT)
-        elif c == '>':
-            self.addToken(TokenType.GE if self.match('=') else TokenType.GT)
-        elif c == '&' and self.match('&'):
-            self.addToken(TokenType.LAND)
-        elif c == '|' and self.match('|'):
-            self.addToken(TokenType.LOR)
+            return
+
         elif c == '\n':
             self.line += 1
         elif c in (' ', '\r', '\t'):
