@@ -23,8 +23,21 @@ class Scanner:
 
     def scanToken(self):
         c: str = self.advance()
-
-        # Manejo de comentarios
+        
+        #Handle negative numbers
+        if c == '-' and self.peek().isdigit():
+            # Include the '-' in the number and match the rest
+            number = self.matchRegex(TOKEN_LITERALS[TokenType.FLOAT]) or self.matchRegex(TOKEN_LITERALS[TokenType.INTEGER])
+            if number:
+                tokenType = TokenType.FLOAT if '.' in number else TokenType.INTEGER
+                try:
+                    value = float(number) if '.' in number else int(number)
+                except ValueError:
+                    self.error(self.line, f"Malformed number '{number}'")
+                    value = None
+                self.addToken(tokenType, value)
+                return 
+        # Handle comments
         if c == '/':
             if self.match('/'):
                 self.ignoreSingleLineComment()
@@ -35,7 +48,7 @@ class Scanner:
             else:
                 self.addToken(TokenType.DIVIDE)
                 return
-        # Tokens de dos caracteres
+        # Two-character tokens
         elif c == '!' and self.match('='):
             self.addToken(TokenType.NE)
             return
@@ -49,7 +62,7 @@ class Scanner:
             return
 
         elif c == '>' and self.match('='):
-            self.addToken(TokenType.GT)
+            self.addToken(TokenType.GE)
             return 
 
         elif c == '&' and self.match('&'):
@@ -60,7 +73,7 @@ class Scanner:
             self.addToken(TokenType.LOR)
             return
 
-        # Tokens de un solo carácter
+        # one-character token
         if c in SINGLE_CHAR_TOKENS:
             self.addToken(SINGLE_CHAR_TOKENS[c])
             return
@@ -146,7 +159,7 @@ class Scanner:
             # Actualiza current a partir de self.start para reflejar el lexema completo.
             self.current = self.start + len(match.group(0))
             return match.group(0)
-        return None
+        return ''
 
     def ignoreSingleLineComment(self):
         while self.peek() != '\n' and not self.isAtEnd():
