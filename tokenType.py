@@ -46,6 +46,10 @@ class TokenType(Enum):
     IMPORT      = auto()
     TRUE        = auto()
     FALSE       = auto()
+    INT         = auto()
+    FLOAT_TYPE  = auto() 
+    CHAR_TYPE   = auto()
+    BOOL_TYPE   = auto()  
 
 SINGLE_CHAR_TOKENS = {
     '+': TokenType.PLUS, '-': TokenType.MINUS, '*': TokenType.TIMES,
@@ -59,12 +63,17 @@ TOKEN_LITERALS = {
     TokenType.IDENTIFIER: r'[a-zA-Z_][a-zA-Z0-9_]*',
     TokenType.INTEGER: r'-?\d+',
     TokenType.FLOAT: r'-?\d*\.\d+',
-    TokenType.CHAR: r'\'.\''
+    TokenType.CHAR: r"'(\\x[0-9a-fA-F]{2}|.)'"
+
 }
 
 KEYWORDS = {
     'const': TokenType.CONST,
     'var': TokenType.VAR,
+    'int': TokenType.INT,
+    'float': TokenType.FLOAT_TYPE,
+    'char': TokenType.CHAR_TYPE,
+    'bool': TokenType.BOOL_TYPE,
     'print': TokenType.PRINT,
     'return': TokenType.RETURN,
     'break': TokenType.BREAK,

@@ -22,23 +22,11 @@ class Scanner:
         return self.current >= len(self.source)
 
     def scanToken(self):
-        c: str = self.advance()
-        
-        #Handle negative numbers
-        if c == '-' and self.peek().isdigit():
-            # Include the '-' in the number and match the rest
-            number = self.matchRegex(TOKEN_LITERALS[TokenType.FLOAT]) or self.matchRegex(TOKEN_LITERALS[TokenType.INTEGER])
-            if number:
-                tokenType = TokenType.FLOAT if '.' in number else TokenType.INTEGER
-                try:
-                    value = float(number) if '.' in number else int(number)
-                except ValueError:
-                    self.error(self.line, f"Malformed number '{number}'")
-                    value = None
-                self.addToken(tokenType, value)
-                return 
+        c: str = self.peek()
+
         # Handle comments
         if c == '/':
+            self.advance()
             if self.match('/'):
                 self.ignoreSingleLineComment()
                 return
@@ -48,71 +36,84 @@ class Scanner:
             else:
                 self.addToken(TokenType.DIVIDE)
                 return
+
         # Two-character tokens
-        elif c == '!' and self.match('='):
+        if c == '!' and self.peekNext() == '=':
+            self.advance(); self.advance()
             self.addToken(TokenType.NE)
             return
-
-        elif c == '=' and self.match('='):
+        elif c == '=' and self.peekNext() == '=':
+            self.advance(); self.advance()
             self.addToken(TokenType.EQ)
             return
-
-        elif c == '<' and self.match('='):
+        elif c == '<' and self.peekNext() == '=':
+            self.advance(); self.advance()
             self.addToken(TokenType.LE)
             return
-
-        elif c == '>' and self.match('='):
+        elif c == '>' and self.peekNext() == '=':
+            self.advance(); self.advance()
             self.addToken(TokenType.GE)
-            return 
-
-        elif c == '&' and self.match('&'):
+            return
+        elif c == '&' and self.peekNext() == '&':
+            self.advance(); self.advance()
             self.addToken(TokenType.LAND)
-            return 
-
-        elif c == '|' and self.match('|'):
+            return
+        elif c == '|' and self.peekNext() == '|':
+            self.advance(); self.advance()
             self.addToken(TokenType.LOR)
             return
 
-        # one-character token
+        # One-character tokens
         if c in SINGLE_CHAR_TOKENS:
+            self.advance()
             self.addToken(SINGLE_CHAR_TOKENS[c])
             return
-
         elif c == '\n':
+            self.advance()
             self.line += 1
+            return
         elif c in (' ', '\r', '\t'):
-            pass
+            self.advance()
+            return
         elif c == '"':
+            self.advance()
             self.string()
-        else:
-            # Intenta reconocer identificadores y palabras clave
-            identifier = self.matchRegex(TOKEN_LITERALS[TokenType.IDENTIFIER])
-            if identifier:
-                tokenType = KEYWORDS.get(identifier, TokenType.IDENTIFIER)
-                self.addToken(tokenType)
-                return
+            return
 
-            # Números (flotantes o enteros)
-            number = self.matchRegex(TOKEN_LITERALS[TokenType.FLOAT]) or self.matchRegex(TOKEN_LITERALS[TokenType.INTEGER])
-            if number:
-                tokenType = TokenType.FLOAT if '.' in number else TokenType.INTEGER
-                try:
-                    value = float(number) if '.' in number else int(number)
-                except ValueError:
-                    self.error(self.line, f"Malformed number '{number}'")
-                    value = None
-                self.addToken(tokenType, value)
-                return
+        # Identifiers and keywords
+        identifier = self.matchRegex(TOKEN_LITERALS[TokenType.IDENTIFIER])
+        if identifier:
+            tokenType = KEYWORDS.get(identifier, TokenType.IDENTIFIER)
+            self.addToken(tokenType)
+            return
 
-            # Literales de carácter
-            char = self.matchRegex(TOKEN_LITERALS[TokenType.CHAR])
-            if char:
-                # Extrae el carácter entre las comillas
-                self.addToken(TokenType.CHAR, char[1])
-                return
+        # Numbers
+        number = self.matchRegex(TOKEN_LITERALS[TokenType.FLOAT]) or self.matchRegex(TOKEN_LITERALS[TokenType.INTEGER])
+        if number:
+            tokenType = TokenType.FLOAT if '.' in number else TokenType.INTEGER
+            try:
+                value = float(number) if '.' in number else int(number)
+            except ValueError:
+                self.error(self.line, f"Malformed number '{number}'")
+                value = None
+            self.addToken(tokenType, value)
+            return
 
-            # Si no se reconoce el carácter, se reporta un error léxico.
-            self.error(self.line, f"Unexpected character '{c}'")
+        # Characters
+        char = self.matchRegex(TOKEN_LITERALS[TokenType.CHAR])
+        if char:
+            try:
+                value = eval(char)
+                self.addToken(TokenType.CHAR, value)
+            except Exception:
+                self.error(self.line, f"Invalid character literal: {char}")
+            return
+
+        # If no rule matched, report unexpected character
+        self.advance()
+        self.error(self.line, f"Unexpected character '{c}'")
+
+
 
     def advance(self) -> str:
         self.current += 1
@@ -153,10 +154,8 @@ class Scanner:
         self.addToken(TokenType.CHAR, value)
 
     def matchRegex(self, regex: str) -> str:
-        # Importante: se hace match desde self.start para incluir el primer carácter ya consumido.
         match = re.match(regex, self.source[self.start:])
         if match:
-            # Actualiza current a partir de self.start para reflejar el lexema completo.
             self.current = self.start + len(match.group(0))
             return match.group(0)
         return ''

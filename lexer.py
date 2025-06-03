@@ -26,6 +26,7 @@ class Gox:
             print(f"Error: {e}")
             exit(1)
 
+
     def errorHandler(self, line, message):
         self.report(line, "", message)
 
