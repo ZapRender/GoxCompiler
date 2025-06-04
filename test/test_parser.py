@@ -2,7 +2,7 @@
 import unittest
 from lexer.scanner import Scanner
 from parse.parse import Parser
-from parse.model import Variable, Print, Assignment, If, While, Function, TypeCast, UnaryOp
+from parse.model import Variable, Print, Assignment, If, While, Function, TypeCast, UnaryOp, FunctionCall
 
 class ParserToken:
     def __init__(self, token):
@@ -158,8 +158,8 @@ class TestParser(unittest.TestCase):
         self.assertEqual(len(ast), 1)
         pr = ast[0]
         self.assertIsInstance(pr, Print)
-        self.assertIsInstance(pr.expression, Function)
-        self.assertEqual(len(pr.expression.body), 2)
+        self.assertIsInstance(pr.expression, FunctionCall)  
+        self.assertEqual(len(pr.expression.args), 2)      
 
 if __name__ == '__main__':
     unittest.main()

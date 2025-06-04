@@ -5,9 +5,11 @@ from parse.model import (
     Integer, Float, Char, Bool, TypeCast, BinOp, 
     UnaryOp, Assignment, Variable, NamedLocation, 
     Break, Continue, Return, Print, If, While, 
-    Function, Parameter,
+    Function, Parameter, FunctionCall, MemoryLocation
 )
-
+import sys
+import json
+from lexer.scanner import Scanner
 class Parser:
     EXPECTED_RPAREN_MSG = "Se esperaba ')'"
     EXPECTED_LBRACE_MSG = "Se esperaba '{'"
@@ -29,12 +31,10 @@ class Parser:
             return self.assignment()
         elif self.check("DEREF"):
             return self.assignment()
-
         elif self.match("VAR") or self.match("CONST"):
             self.current -= 1
             return self.vardecl()
-        elif self.match("IMPORT") or self.match("FUNC"):
-            self.current -= 1 
+        elif self.check("IMPORT") or self.check("FUNC"):
             return self.funcdecl()
         elif self.match("IF"):
             self.current -= 1
@@ -56,11 +56,11 @@ class Parser:
             expr = self.expression()
             self.consume("SEMI", "Se esperaba ';' después de print")
             return Print(expr)
-        
         else:
             expr = self.expression()
             self.consume("SEMI", "Se esperaba ';' después de la expresión")
             return expr
+
 
     def check(self, token_type):
         token = self.peek()
@@ -158,11 +158,12 @@ class Parser:
         self.consume("LPAREN", "Se esperaba '('")
         args = self.arguments()
         self.consume("RPAREN", self.EXPECTED_RPAREN_MSG)
-        return Function(id_token.value, [], None, args)
+        return FunctionCall(id_token.value, args)
 
     def location(self):
         if self.match("DEREF"):
-            return NamedLocation(self.expression())
+            expr = self.expression()
+            return MemoryLocation(expr)
         else:
             id_token = self.consume("IDENTIFIER", "Se esperaba identificador")
             return NamedLocation(id_token.value)
@@ -198,6 +199,13 @@ class Parser:
         raise SyntaxError(f"Línea {lineno}: {message}")
 
     def funcdecl(self):
+        TOKEN_TO_TYPE = {
+            "INT": "int",
+            "FLOAT_TYPE": "float",
+            "CHAR_TYPE": "char",
+            "BOOL_TYPE": "bool"
+        }
+
         import_stmt = None
         if self.match("IMPORT"):
             import_stmt = True
@@ -208,8 +216,9 @@ class Parser:
         self.consume("RPAREN", self.EXPECTED_RPAREN_MSG)
         type_ = None
         type_token = self.peek()
-        if type_token and type_token.type in ["INT", "FLOAT_TYPE", "CHAR_TYPE", "BOOL_TYPE"]:
-            type_ = self.consume(type_token.type, "Se esperaba tipo de retorno").type
+        if type_token and type_token.type in TOKEN_TO_TYPE:
+            type_ = TOKEN_TO_TYPE[type_token.type]
+            self.consume(type_token.type, "Se esperaba tipo de retorno")
         else:
             raise SyntaxError(f"Línea {type_token.lineno if type_token else 'EOF'}: Se esperaba tipo de retorno explícito después de los parámetros de la función")
 
@@ -219,6 +228,7 @@ class Parser:
             body.append(self.statement())
         self.consume("RBRACE", self.EXPECTED_RBRACE_MSG)
         return Function(id_token.value, params, type_, body)
+
 
     def parameters(self):
         params = []
@@ -263,9 +273,6 @@ class Parser:
         self.consume("RBRACE", self.EXPECTED_RBRACE_MSG)
         return While(condition, body)
 
-import sys
-import json
-from lexer.scanner import Scanner
 class ParserToken:
     def __init__(self, token):
         self.type = token.token_type.name
@@ -283,9 +290,22 @@ def ast_to_dict(node):
     else:
         return node
 
+def generate_ast_json(self: str, output_path: str = "ast_output.json") -> List:
+        scanner = Scanner(self, error_handler)
+        tokens = scanner.scan_tokens()
+        if scanner.had_error:
+            raise SyntaxError("Errores léxicos encontrados")
+        wrapped_tokens = [ParserToken(tok) for tok in tokens]
+        parser = Parser(wrapped_tokens)
+        ast = parser.parse()
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(ast_to_dict(ast), f, indent=4)
+        return ast
+
+
 def main():
     if len(sys.argv) != 2:
-        print("Uso: python main.py archivo.gox")
+        print("Uso: python parse.py archivo.gox")
         sys.exit(1)
 
     filename = sys.argv[1]
@@ -297,27 +317,12 @@ def main():
         print(f"No se encontró el archivo: {filename}")
         sys.exit(1)
 
-    scanner = Scanner(source_code, error_handler)
-    tokens = scanner.scan_tokens()
-
-    if scanner.had_error:
-        sys.exit(65)
-
-    wrapped_tokens = [ParserToken(tok) for tok in tokens]
-    parser = Parser(wrapped_tokens)
-
     try:
-        ast = parser.parse()
+        generate_ast_json(source_code)
+        print("AST generado en 'ast_output.json'")
     except SyntaxError as e:
         print(f"Error de sintaxis: {e}")
         sys.exit(66)
-
-    ast_json = json.dumps(ast_to_dict(ast), indent=4)
-
-    with open("ast_output.json", "w", encoding="utf-8") as out_file:
-        out_file.write(ast_json)
-
-    print("AST generado en 'ast_output.json'")
 
 if __name__ == "__main__":
     main()

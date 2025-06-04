@@ -1,261 +1,92 @@
 [
     {
-        "name": "mod",
-        "params": [
-            {
-                "name": "x",
-                "type": "INT"
-            },
-            {
-                "name": "y",
-                "type": "INT"
-            }
-        ],
-        "return_type": "INT",
-        "body": [
-            {
-                "expression": {
-                    "left": {
-                        "name_or_expr": "x"
-                    },
-                    "op": "MINUS",
-                    "right": {
-                        "left": {
-                            "left": {
-                                "name_or_expr": "x"
-                            },
-                            "op": "DIVIDE",
-                            "right": {
-                                "name_or_expr": "y"
-                            }
-                        },
-                        "op": "TIMES",
-                        "right": {
-                            "name_or_expr": "y"
-                        }
-                    }
-                }
-            }
-        ]
-    },
-    {
-        "name": "is_prime",
+        "name": "fibonacci",
         "params": [
             {
                 "name": "n",
                 "type": "INT"
             }
         ],
-        "return_type": "BOOL_TYPE",
+        "return_type": "int",
         "body": [
             {
                 "condition": {
                     "left": {
                         "name_or_expr": "n"
                     },
-                    "op": "LT",
+                    "op": "LE",
                     "right": {
-                        "value": 2
+                        "value": 1
                     }
                 },
                 "then_branch": [
                     {
                         "expression": {
-                            "value": false
+                            "name_or_expr": "n"
                         }
                     }
                 ],
                 "else_branch": []
             },
             {
-                "name": "i",
-                "type": "INT",
                 "expression": {
-                    "value": 2
-                },
-                "is_const": false
-            },
-            {
-                "condition": {
                     "left": {
-                        "left": {
-                            "name_or_expr": "i"
-                        },
-                        "op": "TIMES",
-                        "right": {
-                            "name_or_expr": "i"
-                        }
-                    },
-                    "op": "LE",
-                    "right": {
-                        "name_or_expr": "n"
-                    }
-                },
-                "body": [
-                    {
-                        "condition": {
-                            "left": {
-                                "name": "mod",
-                                "params": [],
-                                "return_type": null,
-                                "body": [
-                                    {
-                                        "name_or_expr": "n"
-                                    },
-                                    {
-                                        "name_or_expr": "i"
-                                    }
-                                ]
-                            },
-                            "op": "EQ",
-                            "right": {
-                                "value": 0
-                            }
-                        },
-                        "then_branch": [
+                        "name": "fibonacci",
+                        "args": [
                             {
-                                "expression": {
-                                    "value": false
-                                }
-                            }
-                        ],
-                        "else_branch": []
-                    },
-                    {
-                        "location": {
-                            "name_or_expr": "i"
-                        },
-                        "expression": {
-                            "left": {
-                                "name_or_expr": "i"
-                            },
-                            "op": "PLUS",
-                            "right": {
-                                "value": 1
-                            }
-                        }
-                    }
-                ]
-            },
-            {
-                "expression": {
-                    "value": true
-                }
-            }
-        ]
-    },
-    {
-        "name": "factorize",
-        "params": [
-            {
-                "name": "n",
-                "type": "INT"
-            }
-        ],
-        "return_type": "INT",
-        "body": [
-            {
-                "name": "factor",
-                "type": "INT",
-                "expression": {
-                    "value": 2
-                },
-                "is_const": false
-            },
-            {
-                "expression": {
-                    "value": "D"
-                }
-            },
-            {
-                "condition": {
-                    "left": {
-                        "name_or_expr": "n"
-                    },
-                    "op": "GT",
-                    "right": {
-                        "value": 1
-                    }
-                },
-                "body": [
-                    {
-                        "condition": {
-                            "left": {
                                 "left": {
                                     "name_or_expr": "n"
                                 },
-                                "op": "DIVIDE",
+                                "op": "MINUS",
                                 "right": {
-                                    "name_or_expr": "factor"
-                                }
-                            },
-                            "op": "EQ",
-                            "right": {
-                                "value": 0
-                            }
-                        },
-                        "body": [
-                            {
-                                "name": "i",
-                                "type": "INT",
-                                "expression": {
-                                    "value": 5
-                                },
-                                "is_const": false
-                            },
-                            {
-                                "expression": {
-                                    "name_or_expr": "factor"
-                                }
-                            },
-                            {
-                                "location": {
-                                    "name_or_expr": "n"
-                                },
-                                "expression": {
-                                    "left": {
-                                        "name_or_expr": "n"
-                                    },
-                                    "op": "DIVIDE",
-                                    "right": {
-                                        "name_or_expr": "factor"
-                                    }
+                                    "value": 1
                                 }
                             }
                         ]
                     },
-                    {
-                        "location": {
-                            "name_or_expr": "factor"
-                        },
-                        "expression": {
-                            "left": {
-                                "name_or_expr": "factor"
-                            },
-                            "op": "PLUS",
-                            "right": {
-                                "value": 1
+                    "op": "PLUS",
+                    "right": {
+                        "name": "fibonacci",
+                        "args": [
+                            {
+                                "left": {
+                                    "name_or_expr": "n"
+                                },
+                                "op": "MINUS",
+                                "right": {
+                                    "value": 2
+                                }
                             }
-                        }
+                        ]
                     }
-                ]
+                }
             }
         ]
-    },
-    {
-        "expression": {
-            "value": "N"
-        }
     },
     {
         "name": "num",
         "type": "INT",
         "expression": {
-            "value": 56
+            "value": 10
         },
         "is_const": false
     },
     {
-        "name_or_expr": "num"
+        "name": "result",
+        "type": "INT",
+        "expression": {
+            "name": "fibonacci",
+            "args": [
+                {
+                    "name_or_expr": "num"
+                }
+            ]
+        },
+        "is_const": false
+    },
+    {
+        "expression": {
+            "name_or_expr": "result"
+        }
     }
 ]
