@@ -1,72 +1,72 @@
 from tokenLexer import Token
-from tokenType import *
+from tokenType import TokenType, SINGLE_CHAR_TOKENS, KEYWORDS, TOKEN_LITERALS
 import re
 
 class Scanner:
-    def __init__(self, source: str, errorCallback):
+    def __init__(self, source: str, error_callback):
         self.source = source
         self.tokens = []
         self.start = 0
         self.current = 0
         self.line = 1
-        self.errorCallback = errorCallback
-        self.hadError = False
+        self.error_callback = error_callback
+        self.had_error = False
 
-    def scanTokens(self) -> list[Token]:
-        while not self.isAtEnd():
+    def scan_tokens(self) -> list[Token]:
+        while not self.is_at_end():
             self.start = self.current
-            self.scanToken()
+            self.scan_token()
         return self.tokens
 
-    def isAtEnd(self) -> bool:
+    def is_at_end(self) -> bool:
         return self.current >= len(self.source)
 
-    def scanToken(self):
+    def scan_token(self):
         c: str = self.peek()
 
         # Handle comments
         if c == '/':
             self.advance()
             if self.match('/'):
-                self.ignoreSingleLineComment()
+                self.ignore_single_line_comment()
                 return
             elif self.match('*'):
-                self.ignoreMultiLineComment()
+                self.ignore_multi_line_comment()
                 return
             else:
-                self.addToken(TokenType.DIVIDE)
+                self.add_token(TokenType.DIVIDE)
                 return
 
         # Two-character tokens
-        if c == '!' and self.peekNext() == '=':
+        if c == '!' and self.peek_next() == '=':
             self.advance(); self.advance()
-            self.addToken(TokenType.NE)
+            self.add_token(TokenType.NE)
             return
-        elif c == '=' and self.peekNext() == '=':
+        elif c == '=' and self.peek_next() == '=':
             self.advance(); self.advance()
-            self.addToken(TokenType.EQ)
+            self.add_token(TokenType.EQ)
             return
-        elif c == '<' and self.peekNext() == '=':
+        elif c == '<' and self.peek_next() == '=':
             self.advance(); self.advance()
-            self.addToken(TokenType.LE)
+            self.add_token(TokenType.LE)
             return
-        elif c == '>' and self.peekNext() == '=':
+        elif c == '>' and self.peek_next() == '=':
             self.advance(); self.advance()
-            self.addToken(TokenType.GE)
+            self.add_token(TokenType.GE)
             return
-        elif c == '&' and self.peekNext() == '&':
+        elif c == '&' and self.peek_next() == '&':
             self.advance(); self.advance()
-            self.addToken(TokenType.LAND)
+            self.add_token(TokenType.LAND)
             return
-        elif c == '|' and self.peekNext() == '|':
+        elif c == '|' and self.peek_next() == '|':
             self.advance(); self.advance()
-            self.addToken(TokenType.LOR)
+            self.add_token(TokenType.LOR)
             return
 
         # One-character tokens
         if c in SINGLE_CHAR_TOKENS:
             self.advance()
-            self.addToken(SINGLE_CHAR_TOKENS[c])
+            self.add_token(SINGLE_CHAR_TOKENS[c])
             return
         elif c == '\n':
             self.advance()
@@ -81,30 +81,30 @@ class Scanner:
             return
 
         # Identifiers and keywords
-        identifier = self.matchRegex(TOKEN_LITERALS[TokenType.IDENTIFIER])
+        identifier = self.match_regex(TOKEN_LITERALS[TokenType.IDENTIFIER])
         if identifier:
-            tokenType = KEYWORDS.get(identifier, TokenType.IDENTIFIER)
-            self.addToken(tokenType)
+            token_type = KEYWORDS.get(identifier, TokenType.IDENTIFIER)
+            self.add_token(token_type)
             return
 
         # Numbers
-        number = self.matchRegex(TOKEN_LITERALS[TokenType.FLOAT]) or self.matchRegex(TOKEN_LITERALS[TokenType.INTEGER])
+        number = self.match_regex(TOKEN_LITERALS[TokenType.FLOAT]) or self.match_regex(TOKEN_LITERALS[TokenType.INTEGER])
         if number:
-            tokenType = TokenType.FLOAT if '.' in number else TokenType.INTEGER
+            token_type = TokenType.FLOAT if '.' in number else TokenType.INTEGER
             try:
                 value = float(number) if '.' in number else int(number)
             except ValueError:
                 self.error(self.line, f"Malformed number '{number}'")
                 value = None
-            self.addToken(tokenType, value)
+            self.add_token(token_type, value)
             return
 
         # Characters
-        char = self.matchRegex(TOKEN_LITERALS[TokenType.CHAR])
+        char = self.match_regex(TOKEN_LITERALS[TokenType.CHAR])
         if char:
             try:
                 value = eval(char)
-                self.addToken(TokenType.CHAR, value)
+                self.add_token(TokenType.CHAR, value)
             except Exception:
                 self.error(self.line, f"Invalid character literal: {char}")
             return
@@ -113,18 +113,16 @@ class Scanner:
         self.advance()
         self.error(self.line, f"Unexpected character '{c}'")
 
-
-
     def advance(self) -> str:
         self.current += 1
         return self.source[self.current - 1]
 
-    def addToken(self, type: TokenType, literal=None):
+    def add_token(self, type: TokenType, literal=None):
         text = self.source[self.start:self.current]
         self.tokens.append(Token(type, text, literal, self.line))
 
     def match(self, expected: str) -> bool:
-        if self.isAtEnd():
+        if self.is_at_end():
             return False
         if self.source[self.current] != expected:
             return False
@@ -132,49 +130,49 @@ class Scanner:
         return True
 
     def peek(self) -> str:
-        if self.isAtEnd():
+        if self.is_at_end():
             return '\0'
         return self.source[self.current]
 
-    def peekNext(self) -> str:
+    def peek_next(self) -> str:
         if self.current + 1 >= len(self.source):
             return '\0'
         return self.source[self.current + 1]
 
     def string(self):
-        while self.peek() != '"' and not self.isAtEnd():
+        while self.peek() != '"' and not self.is_at_end():
             if self.peek() == '\n':
                 self.line += 1
             self.advance()
-        if self.isAtEnd():
+        if self.is_at_end():
             self.error(self.line, "Unterminated string")
             return
-        self.advance()  # Consume la comilla de cierre
+        self.advance()  # Consume closing quotation marks
         value = self.source[self.start + 1:self.current - 1]
-        self.addToken(TokenType.CHAR, value)
+        self.add_token(TokenType.CHAR, value)
 
-    def matchRegex(self, regex: str) -> str:
+    def match_regex(self, regex: str) -> str:
         match = re.match(regex, self.source[self.start:])
         if match:
             self.current = self.start + len(match.group(0))
             return match.group(0)
         return ''
 
-    def ignoreSingleLineComment(self):
-        while self.peek() != '\n' and not self.isAtEnd():
+    def ignore_single_line_comment(self):
+        while self.peek() != '\n' and not self.is_at_end():
             self.advance()
 
-    def ignoreMultiLineComment(self):
-        while not (self.peek() == '*' and self.peekNext() == '/') and not self.isAtEnd():
+    def ignore_multi_line_comment(self):
+        while not (self.peek() == '*' and self.peek_next() == '/') and not self.is_at_end():
             if self.peek() == '\n':
                 self.line += 1
             self.advance()
-        if self.isAtEnd():
+        if self.is_at_end():
             self.error(self.line, "Unterminated multiline comment")
             return
         self.advance()  # Consume '*'
         self.advance()  # Consume '/'
 
     def error(self, line, message):
-        self.errorCallback(line, message)
-        self.hadError = True
+        self.error_callback(line, message)
+        self.had_error = True

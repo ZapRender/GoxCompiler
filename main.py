@@ -7,7 +7,7 @@ from parse import Parser
 
 class ParserToken:
     def __init__(self, token):
-        self.type = token.tokenType.name
+        self.type = token.token_type.name
         self.value = token.literal if token.literal is not None else token.lexeme
         self.lineno = token.line
 
@@ -37,9 +37,9 @@ def main():
         sys.exit(1)
 
     scanner = Scanner(source_code, error_handler)
-    tokens = scanner.scanTokens()
+    tokens = scanner.scan_tokens()
 
-    if scanner.hadError:
+    if scanner.had_error:
         sys.exit(65)
 
     wrapped_tokens = [ParserToken(tok) for tok in tokens]

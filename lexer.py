@@ -3,20 +3,20 @@ from scanner import Scanner
 
 class Gox:
     def __init__(self):
-        self.hadError = False
+        self.had_error = False
 
     def _run(self, content: str):
         scanner = Scanner(content, self.errorHandler)
-        tokens = scanner.scanTokens()
+        tokens = scanner.scan_tokens()
 
-        # Imprime cada token
+        # print the tokens
         for token in tokens:
             print(token.toString())
 
-        if scanner.hadError:
-            self.hadError = True
+        if scanner.had_error:
+            self.had_error = True
 
-    def _runFile(self, path):
+    def _run_file(self, path):
         try:
             with open(path, 'rb') as file:
                 bytes_content = file.read()
@@ -27,19 +27,19 @@ class Gox:
             exit(1)
 
 
-    def errorHandler(self, line, message):
+    def error_handler(self, line, message):
         self.report(line, "", message)
 
     def report(self, line, where, message):
         print(f"[line {line}] Error{where}: {message}")
-        self.hadError = True
+        self.had_error = True
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         exit(1)
     file_path = sys.argv[1]
     gox = Gox()
-    gox._runFile(file_path)
+    gox._run_file(file_path)
     
-    if gox.hadError:
+    if gox.had_error:
         exit(65)

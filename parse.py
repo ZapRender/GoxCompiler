@@ -9,6 +9,10 @@ from model import (
 )
 
 class Parser:
+    EXPECTED_RPAREN_MSG = "Se esperaba ')'"
+    EXPECTED_LBRACE_MSG = "Se esperaba '{'"
+    EXPECTED_RBRACE_MSG = "Se esperaba '}'"
+
     def __init__(self, tokens: List):
         self.tokens = tokens
         self.current = 0
@@ -119,43 +123,41 @@ class Parser:
                 return Char(token.value)
             else:
                 return Bool(token.type == "TRUE")
+            
         elif token.type in ["PLUS", "MINUS", "GROW"]:
             self.advance()
             return UnaryOp(token.type, self.expression())
+        
         elif token.type == "LPAREN":
             self.advance()
             expr = self.expression()
-            self.consume("RPAREN", "Se esperaba ')'")
+            self.consume("RPAREN", self.EXPECTED_RPAREN_MSG)
             return expr
-        elif token.type in ["INT", "FLOAT", "CHAR", "BOOL"]:
+        
+        elif token.type in ["INT", "FLOAT_TYPE", "CHAR_TYPE", "BOOL_TYPE", "INT", "FLOAT", "CHAR", "BOOL"]:
             type_token = self.advance()
             self.consume("LPAREN", "Se esperaba '(' para cast")
             expr = self.expression()
             self.consume("RPAREN", "Se esperaba ')' en cast")
             return TypeCast(type_token.type, expr)
-        elif token.type in ["INT", "FLOAT_TYPE", "CHAR_TYPE", "BOOL_TYPE"]:
-            type_token = self.advance()
-            self.consume("LPAREN", "Se esperaba '(' para cast")
-            expr = self.expression()
-            self.consume("RPAREN", "Se esperaba ')' en cast")
-            return TypeCast(type_token.type, expr)
-
 
         elif token.type == "IDENTIFIER":
             if self.current + 1 < len(self.tokens) and self.tokens[self.current + 1].type == "LPAREN":
                 return self.func_call()
             else:
                 return self.location()
+            
         elif token.type == "DEREF":
             self.advance()
             return NamedLocation(self.expression())
+        
         raise SyntaxError(f"Línea {token.lineno}: Factor no reconocido")
 
     def func_call(self):
         id_token = self.consume("IDENTIFIER", "Se esperaba nombre de función")
         self.consume("LPAREN", "Se esperaba '('")
         args = self.arguments()
-        self.consume("RPAREN", "Se esperaba ')'")
+        self.consume("RPAREN", self.EXPECTED_RPAREN_MSG)
         return Function(id_token.value, [], None, args)
 
     def location(self):
@@ -203,7 +205,7 @@ class Parser:
         id_token = self.consume("IDENTIFIER", "Se esperaba nombre de la función")
         self.consume("LPAREN", "Se esperaba '('")
         params = self.parameters()
-        self.consume("RPAREN", "Se esperaba ')'")
+        self.consume("RPAREN", self.EXPECTED_RPAREN_MSG)
         type_ = None
         type_token = self.peek()
         if type_token and type_token.type in ["INT", "FLOAT_TYPE", "CHAR_TYPE", "BOOL_TYPE"]:
@@ -211,11 +213,11 @@ class Parser:
         else:
             raise SyntaxError(f"Línea {type_token.lineno if type_token else 'EOF'}: Se esperaba tipo de retorno explícito después de los parámetros de la función")
 
-        self.consume("LBRACE", "Se esperaba '{'")
+        self.consume("LBRACE", self.EXPECTED_LBRACE_MSG)
         body = []
         while self.peek() and self.peek().type != "RBRACE":
             body.append(self.statement())
-        self.consume("RBRACE", "Se esperaba '}'")
+        self.consume("RBRACE", self.EXPECTED_RBRACE_MSG)
         return Function(id_token.value, params, type_, body)
 
     def parameters(self):
@@ -236,11 +238,11 @@ class Parser:
     def if_stmt(self):
         self.consume("IF", "Se esperaba 'if'")
         condition = self.expression()
-        self.consume("LBRACE", "Se esperaba '{'")
+        self.consume("LBRACE", self.EXPECTED_LBRACE_MSG)
         then_branch = []
         while self.peek() and self.peek().type != "RBRACE":
             then_branch.append(self.statement())
-        self.consume("RBRACE", "Se esperaba '}'")
+        self.consume("RBRACE", self.EXPECTED_RBRACE_MSG)
 
         else_branch = []
         if self.match("ELSE"):
@@ -254,9 +256,9 @@ class Parser:
     def while_stmt(self):
         self.consume("WHILE", "Se esperaba 'while'")
         condition = self.expression()
-        self.consume("LBRACE", "Se esperaba '{'")
+        self.consume("LBRACE", self.EXPECTED_LBRACE_MSG)
         body = []
         while self.peek() and self.peek().type != "RBRACE":
             body.append(self.statement())
-        self.consume("RBRACE", "Se esperaba '}'")
+        self.consume("RBRACE", self.EXPECTED_RBRACE_MSG)
         return While(condition, body)

@@ -1,124 +1,619 @@
 [
     {
-        "name": "mod",
+        "name": "put_image",
         "params": [
             {
-                "name": "a",
+                "name": "base",
                 "type": "INT"
             },
             {
-                "name": "b",
+                "name": "width",
+                "type": "INT"
+            },
+            {
+                "name": "height",
                 "type": "INT"
             }
         ],
         "return_type": "INT",
-        "body": [
-            {
-                "expression": {
-                    "left": {
-                        "name_or_expr": "a"
-                    },
-                    "op": "MINUS",
-                    "right": {
-                        "left": {
-                            "name_or_expr": "b"
-                        },
-                        "op": "TIMES",
-                        "right": {
-                            "left": {
-                                "name_or_expr": "a"
-                            },
-                            "op": "DIVIDE",
-                            "right": {
-                                "name_or_expr": "b"
-                            }
-                        }
-                    }
-                }
-            }
-        ]
+        "body": []
     },
     {
-        "name": "gcd",
+        "name": "xmin",
+        "type": null,
+        "expression": {
+            "op": "MINUS",
+            "expr": {
+                "value": 2.0
+            }
+        },
+        "is_const": true
+    },
+    {
+        "name": "xmax",
+        "type": null,
+        "expression": {
+            "value": 1.0
+        },
+        "is_const": true
+    },
+    {
+        "name": "ymin",
+        "type": null,
+        "expression": {
+            "op": "MINUS",
+            "expr": {
+                "value": 1.5
+            }
+        },
+        "is_const": true
+    },
+    {
+        "name": "ymax",
+        "type": null,
+        "expression": {
+            "value": 1.5
+        },
+        "is_const": true
+    },
+    {
+        "name": "threshhold",
+        "type": null,
+        "expression": {
+            "value": 1000
+        },
+        "is_const": true
+    },
+    {
+        "name": "in_mandelbrot",
         "params": [
             {
-                "name": "a",
-                "type": "INT"
+                "name": "x0",
+                "type": "FLOAT_TYPE"
             },
             {
-                "name": "b",
+                "name": "y0",
+                "type": "FLOAT_TYPE"
+            },
+            {
+                "name": "n",
                 "type": "INT"
             }
         ],
-        "return_type": "INT",
+        "return_type": "BOOL_TYPE",
         "body": [
+            {
+                "name": "x",
+                "type": "FLOAT_TYPE",
+                "expression": {
+                    "value": 0.0
+                },
+                "is_const": false
+            },
+            {
+                "name": "y",
+                "type": "FLOAT_TYPE",
+                "expression": {
+                    "value": 0.0
+                },
+                "is_const": false
+            },
+            {
+                "name": "xtemp",
+                "type": "FLOAT_TYPE",
+                "expression": null,
+                "is_const": false
+            },
             {
                 "condition": {
                     "left": {
-                        "name_or_expr": "b"
+                        "name_or_expr": "n"
                     },
-                    "op": "NE",
+                    "op": "GT",
                     "right": {
                         "value": 0
                     }
                 },
                 "body": [
                     {
-                        "name": "t",
-                        "type": "INT",
-                        "expression": {
-                            "name_or_expr": "b"
-                        },
-                        "is_const": false
-                    },
-                    {
                         "location": {
-                            "name_or_expr": "b"
+                            "name_or_expr": "xtemp"
                         },
                         "expression": {
-                            "name": "mod",
-                            "params": [],
-                            "return_type": null,
-                            "body": [
-                                {
-                                    "name_or_expr": "a"
+                            "left": {
+                                "left": {
+                                    "left": {
+                                        "name_or_expr": "x"
+                                    },
+                                    "op": "TIMES",
+                                    "right": {
+                                        "name_or_expr": "x"
+                                    }
                                 },
-                                {
-                                    "name_or_expr": "b"
+                                "op": "MINUS",
+                                "right": {
+                                    "left": {
+                                        "name_or_expr": "y"
+                                    },
+                                    "op": "TIMES",
+                                    "right": {
+                                        "name_or_expr": "y"
+                                    }
                                 }
-                            ]
+                            },
+                            "op": "PLUS",
+                            "right": {
+                                "name_or_expr": "x0"
+                            }
                         }
                     },
                     {
                         "location": {
-                            "name_or_expr": "a"
+                            "name_or_expr": "y"
                         },
                         "expression": {
-                            "name_or_expr": "t"
+                            "left": {
+                                "left": {
+                                    "left": {
+                                        "value": 2.0
+                                    },
+                                    "op": "TIMES",
+                                    "right": {
+                                        "name_or_expr": "x"
+                                    }
+                                },
+                                "op": "TIMES",
+                                "right": {
+                                    "name_or_expr": "y"
+                                }
+                            },
+                            "op": "PLUS",
+                            "right": {
+                                "name_or_expr": "y0"
+                            }
+                        }
+                    },
+                    {
+                        "location": {
+                            "name_or_expr": "x"
+                        },
+                        "expression": {
+                            "name_or_expr": "xtemp"
+                        }
+                    },
+                    {
+                        "location": {
+                            "name_or_expr": "n"
+                        },
+                        "expression": {
+                            "left": {
+                                "name_or_expr": "n"
+                            },
+                            "op": "MINUS",
+                            "right": {
+                                "value": 1
+                            }
+                        }
+                    },
+                    {
+                        "condition": {
+                            "left": {
+                                "left": {
+                                    "left": {
+                                        "name_or_expr": "x"
+                                    },
+                                    "op": "TIMES",
+                                    "right": {
+                                        "name_or_expr": "x"
+                                    }
+                                },
+                                "op": "PLUS",
+                                "right": {
+                                    "left": {
+                                        "name_or_expr": "y"
+                                    },
+                                    "op": "TIMES",
+                                    "right": {
+                                        "name_or_expr": "y"
+                                    }
+                                }
+                            },
+                            "op": "GT",
+                            "right": {
+                                "value": 4.0
+                            }
+                        },
+                        "then_branch": [
+                            {
+                                "expression": {
+                                    "value": false
+                                }
+                            }
+                        ],
+                        "else_branch": []
+                    }
+                ]
+            },
+            {
+                "expression": {
+                    "value": true
+                }
+            }
+        ]
+    },
+    {
+        "name": "mandel",
+        "params": [
+            {
+                "name": "width",
+                "type": "INT"
+            },
+            {
+                "name": "height",
+                "type": "INT"
+            }
+        ],
+        "return_type": "INT",
+        "body": [
+            {
+                "name": "dx",
+                "type": "FLOAT_TYPE",
+                "expression": {
+                    "left": {
+                        "left": {
+                            "name_or_expr": "xmax"
+                        },
+                        "op": "MINUS",
+                        "right": {
+                            "name_or_expr": "xmin"
+                        }
+                    },
+                    "op": "DIVIDE",
+                    "right": {
+                        "type": "FLOAT_TYPE",
+                        "expr": {
+                            "name_or_expr": "width"
+                        }
+                    }
+                },
+                "is_const": false
+            },
+            {
+                "name": "dy",
+                "type": "FLOAT_TYPE",
+                "expression": {
+                    "left": {
+                        "left": {
+                            "name_or_expr": "ymax"
+                        },
+                        "op": "MINUS",
+                        "right": {
+                            "name_or_expr": "ymin"
+                        }
+                    },
+                    "op": "DIVIDE",
+                    "right": {
+                        "type": "FLOAT_TYPE",
+                        "expr": {
+                            "name_or_expr": "height"
+                        }
+                    }
+                },
+                "is_const": false
+            },
+            {
+                "name": "ix",
+                "type": "INT",
+                "expression": {
+                    "value": 0
+                },
+                "is_const": false
+            },
+            {
+                "name": "iy",
+                "type": "INT",
+                "expression": {
+                    "left": {
+                        "name_or_expr": "height"
+                    },
+                    "op": "MINUS",
+                    "right": {
+                        "value": 1
+                    }
+                },
+                "is_const": false
+            },
+            {
+                "name": "addr",
+                "type": "INT",
+                "expression": {
+                    "value": 0
+                },
+                "is_const": false
+            },
+            {
+                "name": "memsize",
+                "type": "INT",
+                "expression": {
+                    "op": "GROW",
+                    "expr": {
+                        "left": {
+                            "left": {
+                                "name_or_expr": "width"
+                            },
+                            "op": "TIMES",
+                            "right": {
+                                "name_or_expr": "height"
+                            }
+                        },
+                        "op": "TIMES",
+                        "right": {
+                            "value": 4
+                        }
+                    }
+                },
+                "is_const": false
+            },
+            {
+                "condition": {
+                    "left": {
+                        "name_or_expr": "iy"
+                    },
+                    "op": "GE",
+                    "right": {
+                        "value": 0
+                    }
+                },
+                "body": [
+                    {
+                        "location": {
+                            "name_or_expr": "ix"
+                        },
+                        "expression": {
+                            "value": 0
+                        }
+                    },
+                    {
+                        "condition": {
+                            "left": {
+                                "name_or_expr": "ix"
+                            },
+                            "op": "LT",
+                            "right": {
+                                "name_or_expr": "width"
+                            }
+                        },
+                        "body": [
+                            {
+                                "condition": {
+                                    "name": "in_mandelbrot",
+                                    "params": [],
+                                    "return_type": null,
+                                    "body": [
+                                        {
+                                            "left": {
+                                                "left": {
+                                                    "type": "FLOAT_TYPE",
+                                                    "expr": {
+                                                        "name_or_expr": "ix"
+                                                    }
+                                                },
+                                                "op": "TIMES",
+                                                "right": {
+                                                    "name_or_expr": "dx"
+                                                }
+                                            },
+                                            "op": "PLUS",
+                                            "right": {
+                                                "name_or_expr": "xmin"
+                                            }
+                                        },
+                                        {
+                                            "left": {
+                                                "left": {
+                                                    "type": "FLOAT_TYPE",
+                                                    "expr": {
+                                                        "name_or_expr": "iy"
+                                                    }
+                                                },
+                                                "op": "TIMES",
+                                                "right": {
+                                                    "name_or_expr": "dy"
+                                                }
+                                            },
+                                            "op": "PLUS",
+                                            "right": {
+                                                "name_or_expr": "ymin"
+                                            }
+                                        },
+                                        {
+                                            "name_or_expr": "threshhold"
+                                        }
+                                    ]
+                                },
+                                "then_branch": [
+                                    {
+                                        "location": {
+                                            "name_or_expr": {
+                                                "name_or_expr": "addr"
+                                            }
+                                        },
+                                        "expression": {
+                                            "value": "\u00ff"
+                                        }
+                                    },
+                                    {
+                                        "location": {
+                                            "name_or_expr": {
+                                                "left": {
+                                                    "name_or_expr": "addr"
+                                                },
+                                                "op": "PLUS",
+                                                "right": {
+                                                    "value": 1
+                                                }
+                                            }
+                                        },
+                                        "expression": {
+                                            "value": "\u0000"
+                                        }
+                                    },
+                                    {
+                                        "location": {
+                                            "name_or_expr": {
+                                                "left": {
+                                                    "name_or_expr": "addr"
+                                                },
+                                                "op": "PLUS",
+                                                "right": {
+                                                    "value": 2
+                                                }
+                                            }
+                                        },
+                                        "expression": {
+                                            "value": "\u0000"
+                                        }
+                                    },
+                                    {
+                                        "location": {
+                                            "name_or_expr": {
+                                                "left": {
+                                                    "name_or_expr": "addr"
+                                                },
+                                                "op": "PLUS",
+                                                "right": {
+                                                    "value": 3
+                                                }
+                                            }
+                                        },
+                                        "expression": {
+                                            "value": "\u00ff"
+                                        }
+                                    }
+                                ],
+                                "else_branch": [
+                                    {
+                                        "location": {
+                                            "name_or_expr": {
+                                                "name_or_expr": "addr"
+                                            }
+                                        },
+                                        "expression": {
+                                            "value": "\u00ff"
+                                        }
+                                    },
+                                    {
+                                        "location": {
+                                            "name_or_expr": {
+                                                "left": {
+                                                    "name_or_expr": "addr"
+                                                },
+                                                "op": "PLUS",
+                                                "right": {
+                                                    "value": 1
+                                                }
+                                            }
+                                        },
+                                        "expression": {
+                                            "value": "\u00ff"
+                                        }
+                                    },
+                                    {
+                                        "location": {
+                                            "name_or_expr": {
+                                                "left": {
+                                                    "name_or_expr": "addr"
+                                                },
+                                                "op": "PLUS",
+                                                "right": {
+                                                    "value": 2
+                                                }
+                                            }
+                                        },
+                                        "expression": {
+                                            "value": "\u00ff"
+                                        }
+                                    },
+                                    {
+                                        "location": {
+                                            "name_or_expr": {
+                                                "left": {
+                                                    "name_or_expr": "addr"
+                                                },
+                                                "op": "PLUS",
+                                                "right": {
+                                                    "value": 3
+                                                }
+                                            }
+                                        },
+                                        "expression": {
+                                            "value": "\u00ff"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "location": {
+                                    "name_or_expr": "addr"
+                                },
+                                "expression": {
+                                    "left": {
+                                        "name_or_expr": "addr"
+                                    },
+                                    "op": "PLUS",
+                                    "right": {
+                                        "value": 4
+                                    }
+                                }
+                            },
+                            {
+                                "location": {
+                                    "name_or_expr": "ix"
+                                },
+                                "expression": {
+                                    "left": {
+                                        "name_or_expr": "ix"
+                                    },
+                                    "op": "PLUS",
+                                    "right": {
+                                        "value": 1
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "location": {
+                            "name_or_expr": "iy"
+                        },
+                        "expression": {
+                            "left": {
+                                "name_or_expr": "iy"
+                            },
+                            "op": "MINUS",
+                            "right": {
+                                "value": 1
+                            }
                         }
                     }
                 ]
             },
             {
                 "expression": {
-                    "name_or_expr": "a"
+                    "value": 0
                 }
             }
         ]
     },
     {
-        "name": "powmod",
+        "name": "make_plot",
         "params": [
             {
-                "name": "a",
+                "name": "width",
                 "type": "INT"
             },
             {
-                "name": "x",
-                "type": "INT"
-            },
-            {
-                "name": "n",
+                "name": "height",
                 "type": "INT"
             }
         ],
@@ -128,426 +623,36 @@
                 "name": "result",
                 "type": "INT",
                 "expression": {
-                    "value": 1
-                },
-                "is_const": false
-            },
-            {
-                "condition": {
-                    "left": {
-                        "name_or_expr": "x"
-                    },
-                    "op": "GT",
-                    "right": {
-                        "value": 0
-                    }
-                },
-                "body": [
-                    {
-                        "condition": {
-                            "left": {
-                                "name": "mod",
-                                "params": [],
-                                "return_type": null,
-                                "body": [
-                                    {
-                                        "name_or_expr": "x"
-                                    },
-                                    {
-                                        "value": 2
-                                    }
-                                ]
-                            },
-                            "op": "EQ",
-                            "right": {
-                                "value": 1
-                            }
-                        },
-                        "then_branch": [
-                            {
-                                "location": {
-                                    "name_or_expr": "result"
-                                },
-                                "expression": {
-                                    "name": "mod",
-                                    "params": [],
-                                    "return_type": null,
-                                    "body": [
-                                        {
-                                            "left": {
-                                                "name_or_expr": "result"
-                                            },
-                                            "op": "TIMES",
-                                            "right": {
-                                                "name_or_expr": "a"
-                                            }
-                                        },
-                                        {
-                                            "name_or_expr": "n"
-                                        }
-                                    ]
-                                }
-                            }
-                        ],
-                        "else_branch": []
-                    },
-                    {
-                        "location": {
-                            "name_or_expr": "a"
-                        },
-                        "expression": {
-                            "name": "mod",
-                            "params": [],
-                            "return_type": null,
-                            "body": [
-                                {
-                                    "left": {
-                                        "name_or_expr": "a"
-                                    },
-                                    "op": "TIMES",
-                                    "right": {
-                                        "name_or_expr": "a"
-                                    }
-                                },
-                                {
-                                    "name_or_expr": "n"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "location": {
-                            "name_or_expr": "x"
-                        },
-                        "expression": {
-                            "left": {
-                                "name_or_expr": "x"
-                            },
-                            "op": "DIVIDE",
-                            "right": {
-                                "value": 2
-                            }
-                        }
-                    }
-                ]
-            },
-            {
-                "expression": {
-                    "name_or_expr": "result"
-                }
-            }
-        ]
-    },
-    {
-        "name": "find_period",
-        "params": [
-            {
-                "name": "a",
-                "type": "INT"
-            },
-            {
-                "name": "N",
-                "type": "INT"
-            }
-        ],
-        "return_type": "INT",
-        "body": [
-            {
-                "name": "r",
-                "type": "INT",
-                "expression": {
-                    "value": 1
-                },
-                "is_const": false
-            },
-            {
-                "name": "apow",
-                "type": "INT",
-                "expression": {
-                    "name": "powmod",
+                    "name": "mandel",
                     "params": [],
                     "return_type": null,
                     "body": [
                         {
-                            "name_or_expr": "a"
+                            "name_or_expr": "width"
                         },
                         {
-                            "name_or_expr": "r"
-                        },
-                        {
-                            "name_or_expr": "N"
+                            "name_or_expr": "height"
                         }
                     ]
                 },
                 "is_const": false
             },
             {
-                "condition": {
-                    "left": {
-                        "name_or_expr": "apow"
-                    },
-                    "op": "NE",
-                    "right": {
-                        "value": 1
-                    }
-                },
-                "body": [
-                    {
-                        "location": {
-                            "name_or_expr": "r"
-                        },
-                        "expression": {
-                            "left": {
-                                "name_or_expr": "r"
-                            },
-                            "op": "PLUS",
-                            "right": {
-                                "value": 1
-                            }
-                        }
-                    },
-                    {
-                        "location": {
-                            "name_or_expr": "apow"
-                        },
-                        "expression": {
-                            "name": "powmod",
-                            "params": [],
-                            "return_type": null,
-                            "body": [
-                                {
-                                    "name_or_expr": "a"
-                                },
-                                {
-                                    "name_or_expr": "r"
-                                },
-                                {
-                                    "name_or_expr": "N"
-                                }
-                            ]
-                        }
-                    }
-                ]
-            },
-            {
                 "expression": {
-                    "name_or_expr": "r"
-                }
-            }
-        ]
-    },
-    {
-        "name": "shor",
-        "params": [
-            {
-                "name": "N",
-                "type": "INT"
-            }
-        ],
-        "return_type": "INT",
-        "body": [
-            {
-                "name": "a",
-                "type": "INT",
-                "expression": {
-                    "value": 2
-                },
-                "is_const": false
-            },
-            {
-                "condition": {
-                    "left": {
-                        "name": "gcd",
-                        "params": [],
-                        "return_type": null,
-                        "body": [
-                            {
-                                "name_or_expr": "a"
-                            },
-                            {
-                                "name_or_expr": "N"
-                            }
-                        ]
-                    },
-                    "op": "NE",
-                    "right": {
-                        "value": 1
-                    }
-                },
-                "then_branch": [
-                    {
-                        "expression": {
-                            "name_or_expr": "a"
-                        }
-                    }
-                ],
-                "else_branch": []
-            },
-            {
-                "name": "r",
-                "type": "INT",
-                "expression": {
-                    "name": "find_period",
+                    "name": "put_image",
                     "params": [],
                     "return_type": null,
                     "body": [
                         {
-                            "name_or_expr": "a"
-                        },
-                        {
-                            "name_or_expr": "N"
-                        }
-                    ]
-                },
-                "is_const": false
-            },
-            {
-                "condition": {
-                    "left": {
-                        "name": "mod",
-                        "params": [],
-                        "return_type": null,
-                        "body": [
-                            {
-                                "name_or_expr": "r"
-                            },
-                            {
-                                "value": 2
-                            }
-                        ]
-                    },
-                    "op": "NE",
-                    "right": {
-                        "value": 0
-                    }
-                },
-                "then_branch": [
-                    {
-                        "expression": {
                             "value": 0
-                        }
-                    }
-                ],
-                "else_branch": []
-            },
-            {
-                "name": "x",
-                "type": "INT",
-                "expression": {
-                    "name": "powmod",
-                    "params": [],
-                    "return_type": null,
-                    "body": [
-                        {
-                            "name_or_expr": "a"
                         },
                         {
-                            "left": {
-                                "name_or_expr": "r"
-                            },
-                            "op": "DIVIDE",
-                            "right": {
-                                "value": 2
-                            }
+                            "name_or_expr": "width"
                         },
                         {
-                            "name_or_expr": "N"
+                            "name_or_expr": "height"
                         }
                     ]
-                },
-                "is_const": false
-            },
-            {
-                "condition": {
-                    "left": {
-                        "name_or_expr": "x"
-                    },
-                    "op": "EQ",
-                    "right": {
-                        "left": {
-                            "name_or_expr": "N"
-                        },
-                        "op": "MINUS",
-                        "right": {
-                            "value": 1
-                        }
-                    }
-                },
-                "then_branch": [
-                    {
-                        "expression": {
-                            "value": 0
-                        }
-                    }
-                ],
-                "else_branch": []
-            },
-            {
-                "name": "f1",
-                "type": "INT",
-                "expression": {
-                    "name": "gcd",
-                    "params": [],
-                    "return_type": null,
-                    "body": [
-                        {
-                            "left": {
-                                "name_or_expr": "x"
-                            },
-                            "op": "MINUS",
-                            "right": {
-                                "value": 1
-                            }
-                        },
-                        {
-                            "name_or_expr": "N"
-                        }
-                    ]
-                },
-                "is_const": false
-            },
-            {
-                "name": "f2",
-                "type": "INT",
-                "expression": {
-                    "name": "gcd",
-                    "params": [],
-                    "return_type": null,
-                    "body": [
-                        {
-                            "left": {
-                                "name_or_expr": "x"
-                            },
-                            "op": "PLUS",
-                            "right": {
-                                "value": 1
-                            }
-                        },
-                        {
-                            "name_or_expr": "N"
-                        }
-                    ]
-                },
-                "is_const": false
-            },
-            {
-                "expression": {
-                    "name_or_expr": "f1"
-                }
-            },
-            {
-                "expression": {
-                    "value": " "
-                }
-            },
-            {
-                "expression": {
-                    "name_or_expr": "f2"
-                }
-            },
-            {
-                "expression": {
-                    "value": 0
                 }
             }
         ]
@@ -559,12 +664,15 @@
         "body": [
             {
                 "expression": {
-                    "name": "shor",
+                    "name": "make_plot",
                     "params": [],
                     "return_type": null,
                     "body": [
                         {
-                            "value": 151821
+                            "value": 800
+                        },
+                        {
+                            "value": 800
                         }
                     ]
                 }
