@@ -1,5 +1,5 @@
-from tokenLexer import Token
-from tokenType import TokenType, SINGLE_CHAR_TOKENS, KEYWORDS, TOKEN_LITERALS
+from lexer.tokenLexer import Token
+from lexer.tokenType import TokenType, SINGLE_CHAR_TOKENS, KEYWORDS, TOKEN_LITERALS
 import re
 
 class Scanner:

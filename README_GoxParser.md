@@ -75,3 +75,6 @@ El parser ha sido probado exhaustivamente con funciones unitarias usando `unitte
 ## Conclusión
 
 Este parser es un módulo sólido y estricto conforme a la gramática de GoxLang. Fue construido cuidadosamente para generar un AST usable y compatible con futuras etapas del compilador, como el análisis semántico o la generación de código.
+
+ejecutar parser: python -m parse.parse .\samples\factorize.gox
+ejecutar prueba unitaria:  python -m unittest .\test\test_parser.py

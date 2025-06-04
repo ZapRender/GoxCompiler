@@ -1,8 +1,8 @@
 
 import sys
 import json
-from scanner import Scanner
-from parse import Parser
+from lexer.scanner import Scanner
+from parse.parse import Parser
 
 
 class ParserToken:

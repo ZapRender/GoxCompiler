@@ -1,5 +1,5 @@
 import sys
-from scanner import Scanner
+from lexer.scanner import Scanner
 
 class Gox:
     def __init__(self):

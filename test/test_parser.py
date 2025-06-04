@@ -1,28 +1,28 @@
 
 import unittest
-from scanner import Scanner
-from parse import Parser
-from model import Variable, Print, Assignment, If, While, Function, TypeCast, UnaryOp
+from lexer.scanner import Scanner
+from parse.parse import Parser
+from parse.model import Variable, Print, Assignment, If, While, Function, TypeCast, UnaryOp
 
 class ParserToken:
     def __init__(self, token):
-        self.type = token.tokenType.name
+        self.type = token.token_type.name
         self.value = token.literal if token.literal is not None else token.lexeme
         self.lineno = token.line
 
 def error_handler(line, message):
-    raise Exception(f"[line {line}] Error: {message}")
+    raise SyntaxError(f"[line {line}] Error: {message}")
 
 def parse_source(source_code):
     scanner = Scanner(source_code, error_handler)
-    tokens = scanner.scanTokens()
+    tokens = scanner.scan_tokens()
     wrapped_tokens = [ParserToken(t) for t in tokens]
     parser = Parser(wrapped_tokens)
     return parser.parse()
 
 class TestParser(unittest.TestCase):
     # ----------------------------
-    # Casos exitosos
+    # success cases
     # ----------------------------
 
     def test_variable_declaration(self):
@@ -80,7 +80,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual(func.return_type, "INT")
 
     # ----------------------------
-    # Casos con errores
+    # Error cases
     # ----------------------------
 
     def test_missing_semicolon_in_assignment(self):
@@ -112,8 +112,9 @@ class TestParser(unittest.TestCase):
         with self.assertRaises(SyntaxError) as cm:
             parse_source(source)
         self.assertIn("Se esperaba '}'", str(cm.exception))
-
-    # extras
+    # ----------------------------
+    # Extras
+    # ----------------------------
     def test_const_declaration(self):
         source = "const PI = 3.14;"
         ast = parse_source(source)
