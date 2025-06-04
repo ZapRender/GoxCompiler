@@ -321,27 +321,27 @@ class IRCode(Visitor):
             if isinstance(item, Variable):
                 module.add_global(item.name, _typemap.get(item.type, 'I'))
 
-        # Crear función main para código global
-        func_main = IRFunction(module, 'main', [], [], 'I')
+        # Función real que contiene todo el código
+        func_actual_main = IRFunction(module, '_actual_main', [], [], 'I')
 
-        # Inicializar variables globales
+        # Código para inicializar variables globales
         for item in node:
             if isinstance(item, Variable):
-                item.accept(ircode, func_main)
+                item.accept(ircode, func_actual_main)
 
-        # Generar código para funciones y otras sentencias globales
+        # Código para funciones y demás sentencias globales
         for item in node:
             if not isinstance(item, Variable):
-                item.accept(ircode, func_main)
+                item.accept(ircode, func_actual_main)
 
-        func_main.append(('CONSTI', 0))
+        func_actual_main.append(('RET',))
+
+        # Función main que sólo llama a _actual_main
+        func_main = IRFunction(module, 'main', [], [], 'I')
+        func_main.append(('CALL', '_actual_main'))
         func_main.append(('RET',))
 
         return module
-
-
-
-
 
     def visit_Assignment(self, n: Assignment, func: IRFunction):
         n.expression.accept(self, func)
@@ -362,7 +362,6 @@ class IRCode(Visitor):
 
     def visit_Print(self, n: Print, func: IRFunction):
         n.expression.accept(self, func)
-        # Diferencia impresión para chars
         if isinstance(n.expression, Char):
             func.append(('PRINTB',))
         else:
@@ -397,7 +396,7 @@ class IRCode(Visitor):
         func.append(('RET',))
 
     def visit_Variable(self, n: Variable, func: IRFunction):
-        # Solo variables con var dentro de funciones como locales
+        # Sólo variables locales declaradas con var dentro de funciones
         if func.name != '_actual_main':
             func.new_local(n.name, _typemap.get(n.type, 'I'))
             if n.expression:
@@ -414,14 +413,18 @@ class IRCode(Visitor):
         parmnames = [p.name for p in n.params]
         parmtypes = [_typemap.get(p.type, 'I') for p in n.params]
         irfunc = IRFunction(module, n.name, parmnames, parmtypes, _typemap.get(n.return_type, 'I'))
+
+        # Registrar variables locales explícitas
         for stmt in n.body:
             if isinstance(stmt, Variable):
                 irfunc.new_local(stmt.name, _typemap.get(stmt.type, 'I'))
+
         for stmt in n.body:
             stmt.accept(self, irfunc)
-        irfunc.append(('CONSTI', 0))
-        irfunc.append(('RET',))
 
+        # Asegurar que sólo un RET final
+        if not irfunc.code or irfunc.code[-1][0] != 'RET':
+            irfunc.append(('RET',))
 
     def visit_Integer(self, n: Integer, func: IRFunction):
         func.append(('CONSTI', n.value))
@@ -452,7 +455,7 @@ class IRCode(Visitor):
         }
         n.left.accept(self, func)
         n.right.accept(self, func)
-        left_type = 'int'  # Simplificación
+        left_type = 'int'  # simplificado
         right_type = 'int'
         op = OP_MAP.get(n.op, n.op)
         ir_instr = self._binop_code.get((left_type, op, right_type))
@@ -465,7 +468,7 @@ class IRCode(Visitor):
         if n.op == 'GROW' or n.op == '^':
             func.append(('GROW',))
             return
-        ops = self._unaryop_code.get((n.op, 'int'))  # Simplificado
+        ops = self._unaryop_code.get((n.op, 'int'))  # simplificado
         if ops is None:
             raise Exception(f"Operador unario no soportado: {n.op}")
         for op in ops:
@@ -473,7 +476,7 @@ class IRCode(Visitor):
 
     def visit_TypeCast(self, n: TypeCast, func: IRFunction):
         n.expr.accept(self, func)
-        ops = self._typecast_code.get(('int', 'float'))  # Simplificado
+        ops = self._typecast_code.get(('int', 'float'))  # simplificado
         if ops:
             for op in ops:
                 func.append(op)
@@ -497,10 +500,6 @@ class IRCode(Visitor):
     def visit_MemoryLocation(self, n: MemoryLocation, func: IRFunction):
         n.address.accept(self, func)
         func.append(('PEEKI',))
-
-
-
-
 
 import sys
 

@@ -1,6 +1,7 @@
 // Programa correcto: calcula módulo y verifica si un número es primo
 
 func mod(x int, y int) int {
+    
     return x - (x / y) * y;
 }
 
@@ -10,6 +11,7 @@ func is_prime(n int) bool {
     }
     var i int = 2;
     while i * i <= n {
+
         if mod(n, i) == 0 {
             return false;
         }
@@ -18,4 +20,4 @@ func is_prime(n int) bool {
     return true;
 }
 
-print is_prime(7);
+print is_prime(89);
