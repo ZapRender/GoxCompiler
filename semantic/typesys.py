@@ -78,6 +78,8 @@ unary_ops = {
 	('-', 'float') : 'float',
 
 	('!', 'bool') : 'bool',
+
+	('GROW', 'int'): 'int',
 }
 
 def check_unaryop(op, operand_type):

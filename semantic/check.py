@@ -4,6 +4,8 @@ from typing import Union
 from parse.model import *
 from semantic.symtab import Symtab
 from semantic.typesys import check_binop, check_unaryop
+import sys
+from parse.parse import generate_ast_json
 
 class Checker:
     def __init__(self):
@@ -51,17 +53,30 @@ class Checker:
     # Statements
 
     def visit_Assignment(self, n: Assignment, env: Symtab):
-        var = env.get(n.location.name_or_expr)
-        if var is None:
-            raise NameError(f"Variable '{n.location.name_or_expr}' no declarada")
-
-        if (hasattr(var, 'is_const') and var.is_const) or isinstance(var, Parameter):
-            raise TypeError(f"No se puede asignar a constante o parámetro '{var.name}'")
+        if isinstance(n.location, NamedLocation):
+            var_name = n.location.name_or_expr
+            var = env.get(var_name)
+            if var is None:
+                raise NameError(f"Variable '{var_name}' no declarada")
+            # Prohibir solo si es constante, permitir asignar a parámetros
+            if hasattr(var, 'is_const') and var.is_const:
+                raise TypeError(f"No se puede asignar a constante '{var.name}'")
+            var_type = var.type.lower()
+            
+        elif isinstance(n.location, MemoryLocation):
+            # Validar la expresión de dirección
+            addr_type = n.location.address.accept(self, env).lower()
+            if addr_type != 'int':
+                raise TypeError("La dirección para acceso indirecto debe ser un entero")
+            # Asumimos tipo int para acceso indirecto
+            var_type = 'int'
+        else:
+            raise TypeError(f"Tipo de ubicación no soportado: {type(n.location)}")
 
         expr_type = n.expression.accept(self, env).lower()
-        var_type = var.type.lower()
         if var_type != expr_type:
             raise TypeError(f"No se puede asignar tipo '{expr_type}' a '{var_type}'")
+
 
 
     def visit_Print(self, n: Print, env: Symtab):
@@ -175,10 +190,15 @@ class Checker:
         return n.type.lower()
 
     def visit_NamedLocation(self, n: NamedLocation, env: Symtab):
-        symbol = env.get(n.name_or_expr)
-        if symbol is None:
-            raise NameError(f"Nombre no declarado: {n.name_or_expr}")
-        return symbol.type.lower()
+        if isinstance(n.name_or_expr, str):
+            symbol = env.get(n.name_or_expr)
+            if symbol is None:
+                raise NameError(f"Nombre no declarado: {n.name_or_expr}")
+            return symbol.type.lower()
+        else:
+            # Si es una expresión, evalúala para validar su tipo
+            return n.name_or_expr.accept(self, env)
+
 
     def visit_FunctionCall(self, n: FunctionCall, env: Symtab):
         func = env.get(n.name)
@@ -191,3 +211,32 @@ class Checker:
             if arg_type != param.type.lower():
                 raise TypeError(f"Argumento incompatible en llamada a '{n.name}': se esperaba '{param.type}', se recibió '{arg_type}'")
         return func.return_type.lower()
+
+
+def main():
+    if len(sys.argv) != 2:
+        print("Uso: python main_semantic.py archivo.gox")
+        sys.exit(1)
+
+    filename = sys.argv[1]
+
+    try:
+        with open(filename, "r", encoding="utf-8") as f:
+            source_code = f.read()
+    except FileNotFoundError:
+        print(f"No se encontró el archivo: {filename}")
+        sys.exit(1)
+
+    try:
+        # Generar AST y archivo JSON
+        ast = generate_ast_json(source_code)
+        print("[bold green]AST generado en 'ast_output.json'")
+    except SyntaxError as e:
+        print(f"Error de sintaxis: {e}")
+        sys.exit(66)
+
+    # Ejecutar análisis semántico
+    Checker.check(ast)
+
+if __name__ == "__main__":
+    main()

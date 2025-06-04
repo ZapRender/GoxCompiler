@@ -1,92 +1,265 @@
 [
     {
-        "name": "fibonacci",
-        "params": [
-            {
-                "name": "n",
-                "type": "INT"
+        "name": "n",
+        "type": null,
+        "expression": {
+            "value": 100
+        },
+        "is_const": true
+    },
+    {
+        "name": "base",
+        "type": null,
+        "expression": {
+            "op": "GROW",
+            "expr": {
+                "left": {
+                    "name_or_expr": "n"
+                },
+                "op": "PLUS",
+                "right": {
+                    "value": 1
+                }
             }
-        ],
-        "return_type": "int",
+        },
+        "is_const": true
+    },
+    {
+        "name": "i",
+        "type": "INT",
+        "expression": {
+            "value": 2
+        },
+        "is_const": false
+    },
+    {
+        "condition": {
+            "left": {
+                "name_or_expr": "i"
+            },
+            "op": "LE",
+            "right": {
+                "name_or_expr": "n"
+            }
+        },
         "body": [
             {
-                "condition": {
-                    "left": {
-                        "name_or_expr": "n"
-                    },
-                    "op": "LE",
-                    "right": {
-                        "value": 1
-                    }
-                },
-                "then_branch": [
-                    {
-                        "expression": {
-                            "name_or_expr": "n"
+                "location": {
+                    "address": {
+                        "left": {
+                            "name_or_expr": "base"
+                        },
+                        "op": "PLUS",
+                        "right": {
+                            "name_or_expr": "i"
                         }
                     }
-                ],
-                "else_branch": []
+                },
+                "expression": {
+                    "value": 1
+                }
             },
             {
+                "location": {
+                    "name_or_expr": "i"
+                },
                 "expression": {
                     "left": {
-                        "name": "fibonacci",
-                        "args": [
-                            {
-                                "left": {
-                                    "name_or_expr": "n"
-                                },
-                                "op": "MINUS",
-                                "right": {
-                                    "value": 1
-                                }
-                            }
-                        ]
+                        "name_or_expr": "i"
                     },
                     "op": "PLUS",
                     "right": {
-                        "name": "fibonacci",
-                        "args": [
-                            {
-                                "left": {
-                                    "name_or_expr": "n"
-                                },
-                                "op": "MINUS",
-                                "right": {
-                                    "value": 2
-                                }
-                            }
-                        ]
+                        "value": 1
                     }
                 }
             }
         ]
     },
     {
-        "name": "num",
-        "type": "INT",
-        "expression": {
-            "value": 10
+        "location": {
+            "name_or_expr": "i"
         },
-        "is_const": false
-    },
-    {
-        "name": "result",
-        "type": "INT",
         "expression": {
-            "name": "fibonacci",
-            "args": [
-                {
-                    "name_or_expr": "num"
-                }
-            ]
-        },
-        "is_const": false
-    },
-    {
-        "expression": {
-            "name_or_expr": "result"
+            "value": 2
         }
+    },
+    {
+        "condition": {
+            "left": {
+                "left": {
+                    "name_or_expr": "i"
+                },
+                "op": "TIMES",
+                "right": {
+                    "name_or_expr": "i"
+                }
+            },
+            "op": "LE",
+            "right": {
+                "name_or_expr": "n"
+            }
+        },
+        "body": [
+            {
+                "condition": {
+                    "name_or_expr": {
+                        "left": {
+                            "left": {
+                                "name_or_expr": "base"
+                            },
+                            "op": "PLUS",
+                            "right": {
+                                "name_or_expr": "i"
+                            }
+                        },
+                        "op": "EQ",
+                        "right": {
+                            "value": 1
+                        }
+                    }
+                },
+                "then_branch": [
+                    {
+                        "name": "j",
+                        "type": "INT",
+                        "expression": {
+                            "left": {
+                                "name_or_expr": "i"
+                            },
+                            "op": "TIMES",
+                            "right": {
+                                "name_or_expr": "i"
+                            }
+                        },
+                        "is_const": false
+                    },
+                    {
+                        "condition": {
+                            "left": {
+                                "name_or_expr": "j"
+                            },
+                            "op": "LE",
+                            "right": {
+                                "name_or_expr": "n"
+                            }
+                        },
+                        "body": [
+                            {
+                                "expression": {
+                                    "name_or_expr": "j"
+                                }
+                            },
+                            {
+                                "location": {
+                                    "address": {
+                                        "left": {
+                                            "name_or_expr": "base"
+                                        },
+                                        "op": "PLUS",
+                                        "right": {
+                                            "name_or_expr": "j"
+                                        }
+                                    }
+                                },
+                                "expression": {
+                                    "value": 0
+                                }
+                            },
+                            {
+                                "location": {
+                                    "name_or_expr": "j"
+                                },
+                                "expression": {
+                                    "left": {
+                                        "name_or_expr": "j"
+                                    },
+                                    "op": "PLUS",
+                                    "right": {
+                                        "name_or_expr": "i"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "else_branch": []
+            },
+            {
+                "location": {
+                    "name_or_expr": "i"
+                },
+                "expression": {
+                    "left": {
+                        "name_or_expr": "i"
+                    },
+                    "op": "PLUS",
+                    "right": {
+                        "value": 1
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "location": {
+            "name_or_expr": "i"
+        },
+        "expression": {
+            "value": 2
+        }
+    },
+    {
+        "condition": {
+            "left": {
+                "name_or_expr": "i"
+            },
+            "op": "LE",
+            "right": {
+                "name_or_expr": "n"
+            }
+        },
+        "body": [
+            {
+                "condition": {
+                    "name_or_expr": {
+                        "left": {
+                            "left": {
+                                "name_or_expr": "base"
+                            },
+                            "op": "PLUS",
+                            "right": {
+                                "name_or_expr": "i"
+                            }
+                        },
+                        "op": "EQ",
+                        "right": {
+                            "value": 1
+                        }
+                    }
+                },
+                "then_branch": [
+                    {
+                        "expression": {
+                            "name_or_expr": "i"
+                        }
+                    }
+                ],
+                "else_branch": []
+            },
+            {
+                "location": {
+                    "name_or_expr": "i"
+                },
+                "expression": {
+                    "left": {
+                        "name_or_expr": "i"
+                    },
+                    "op": "PLUS",
+                    "right": {
+                        "value": 1
+                    }
+                }
+            }
+        ]
     }
 ]

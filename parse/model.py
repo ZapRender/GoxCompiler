@@ -173,3 +173,13 @@ class MemoryLocation(Node):
 
     def __repr__(self):
         return f"MemoryLocation({self.address})"
+    
+class Visitor:
+    def visit(self, node, env):
+        method_name = 'visit_' + node.__class__.__name__
+        visitor = getattr(self, method_name, self.generic_visit)
+        return visitor(node, env)
+
+    def generic_visit(self, node, env):
+        raise Exception(f'No visit method defined for {node.__class__.__name__}')
+

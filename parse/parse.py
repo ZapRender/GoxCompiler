@@ -316,6 +316,7 @@ def main():
     except FileNotFoundError:
         print(f"No se encontró el archivo: {filename}")
         sys.exit(1)
+        
 
     try:
         generate_ast_json(source_code)

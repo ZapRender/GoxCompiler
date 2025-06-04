@@ -27,7 +27,7 @@ class TestSemanticChecker(unittest.TestCase):
         assign = Assignment(NamedLocation("c"), Integer(2))
         stmts = [const_var, assign]
         checker = self.check_program(stmts)
-        self.assertIn("No se puede asignar a constante o parámetro 'c'", checker.errors[0])
+        self.assertIn("No se puede asignar a constante 'c'", checker.errors[0])
 
     def test_type_mismatch_assignment(self):
         var = Variable("x", "int", Integer(1), False)
