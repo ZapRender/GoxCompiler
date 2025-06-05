@@ -1,0 +1,554 @@
+[
+    {
+        "name": "mod",
+        "params": [
+            {
+                "name": "a",
+                "type": "INT"
+            },
+            {
+                "name": "b",
+                "type": "INT"
+            }
+        ],
+        "return_type": "int",
+        "body": [
+            {
+                "expression": {
+                    "left": {
+                        "name_or_expr": "a"
+                    },
+                    "op": "MINUS",
+                    "right": {
+                        "left": {
+                            "name_or_expr": "b"
+                        },
+                        "op": "TIMES",
+                        "right": {
+                            "left": {
+                                "name_or_expr": "a"
+                            },
+                            "op": "DIVIDE",
+                            "right": {
+                                "name_or_expr": "b"
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "name": "gcd",
+        "params": [
+            {
+                "name": "a",
+                "type": "INT"
+            },
+            {
+                "name": "b",
+                "type": "INT"
+            }
+        ],
+        "return_type": "int",
+        "body": [
+            {
+                "condition": {
+                    "left": {
+                        "name_or_expr": "b"
+                    },
+                    "op": "NE",
+                    "right": {
+                        "value": 0
+                    }
+                },
+                "body": [
+                    {
+                        "name": "t",
+                        "type": "INT",
+                        "expression": {
+                            "name_or_expr": "b"
+                        },
+                        "is_const": false
+                    },
+                    {
+                        "location": {
+                            "name_or_expr": "b"
+                        },
+                        "expression": {
+                            "name": "mod",
+                            "args": [
+                                {
+                                    "name_or_expr": "a"
+                                },
+                                {
+                                    "name_or_expr": "b"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "location": {
+                            "name_or_expr": "a"
+                        },
+                        "expression": {
+                            "name_or_expr": "t"
+                        }
+                    }
+                ]
+            },
+            {
+                "expression": {
+                    "name_or_expr": "a"
+                }
+            }
+        ]
+    },
+    {
+        "name": "powmod",
+        "params": [
+            {
+                "name": "a",
+                "type": "INT"
+            },
+            {
+                "name": "x",
+                "type": "INT"
+            },
+            {
+                "name": "n",
+                "type": "INT"
+            }
+        ],
+        "return_type": "int",
+        "body": [
+            {
+                "name": "result",
+                "type": "INT",
+                "expression": {
+                    "value": 1
+                },
+                "is_const": false
+            },
+            {
+                "condition": {
+                    "left": {
+                        "name_or_expr": "x"
+                    },
+                    "op": "GT",
+                    "right": {
+                        "value": 0
+                    }
+                },
+                "body": [
+                    {
+                        "condition": {
+                            "left": {
+                                "name": "mod",
+                                "args": [
+                                    {
+                                        "name_or_expr": "x"
+                                    },
+                                    {
+                                        "value": 2
+                                    }
+                                ]
+                            },
+                            "op": "NE",
+                            "right": {
+                                "value": 0
+                            }
+                        },
+                        "then_branch": [
+                            {
+                                "location": {
+                                    "name_or_expr": "result"
+                                },
+                                "expression": {
+                                    "name": "mod",
+                                    "args": [
+                                        {
+                                            "left": {
+                                                "name_or_expr": "result"
+                                            },
+                                            "op": "TIMES",
+                                            "right": {
+                                                "name_or_expr": "a"
+                                            }
+                                        },
+                                        {
+                                            "name_or_expr": "n"
+                                        }
+                                    ]
+                                }
+                            }
+                        ],
+                        "else_branch": []
+                    },
+                    {
+                        "location": {
+                            "name_or_expr": "a"
+                        },
+                        "expression": {
+                            "name": "mod",
+                            "args": [
+                                {
+                                    "left": {
+                                        "name_or_expr": "a"
+                                    },
+                                    "op": "TIMES",
+                                    "right": {
+                                        "name_or_expr": "a"
+                                    }
+                                },
+                                {
+                                    "name_or_expr": "n"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "location": {
+                            "name_or_expr": "x"
+                        },
+                        "expression": {
+                            "left": {
+                                "name_or_expr": "x"
+                            },
+                            "op": "DIVIDE",
+                            "right": {
+                                "value": 2
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "expression": {
+                    "name_or_expr": "result"
+                }
+            }
+        ]
+    },
+    {
+        "name": "find_period",
+        "params": [
+            {
+                "name": "a",
+                "type": "INT"
+            },
+            {
+                "name": "N",
+                "type": "INT"
+            }
+        ],
+        "return_type": "int",
+        "body": [
+            {
+                "name": "r",
+                "type": "INT",
+                "expression": {
+                    "value": 1
+                },
+                "is_const": false
+            },
+            {
+                "name": "apow",
+                "type": "INT",
+                "expression": {
+                    "name": "powmod",
+                    "args": [
+                        {
+                            "name_or_expr": "a"
+                        },
+                        {
+                            "name_or_expr": "r"
+                        },
+                        {
+                            "name_or_expr": "N"
+                        }
+                    ]
+                },
+                "is_const": false
+            },
+            {
+                "condition": {
+                    "left": {
+                        "name_or_expr": "apow"
+                    },
+                    "op": "NE",
+                    "right": {
+                        "value": 1
+                    }
+                },
+                "body": [
+                    {
+                        "location": {
+                            "name_or_expr": "r"
+                        },
+                        "expression": {
+                            "left": {
+                                "name_or_expr": "r"
+                            },
+                            "op": "PLUS",
+                            "right": {
+                                "value": 1
+                            }
+                        }
+                    },
+                    {
+                        "location": {
+                            "name_or_expr": "apow"
+                        },
+                        "expression": {
+                            "name": "powmod",
+                            "args": [
+                                {
+                                    "name_or_expr": "a"
+                                },
+                                {
+                                    "name_or_expr": "r"
+                                },
+                                {
+                                    "name_or_expr": "N"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "expression": {
+                    "name_or_expr": "r"
+                }
+            }
+        ]
+    },
+    {
+        "name": "shor",
+        "params": [
+            {
+                "name": "N",
+                "type": "INT"
+            }
+        ],
+        "return_type": "int",
+        "body": [
+            {
+                "name": "a",
+                "type": "INT",
+                "expression": {
+                    "value": 2
+                },
+                "is_const": false
+            },
+            {
+                "condition": {
+                    "left": {
+                        "name": "gcd",
+                        "args": [
+                            {
+                                "name_or_expr": "a"
+                            },
+                            {
+                                "name_or_expr": "N"
+                            }
+                        ]
+                    },
+                    "op": "NE",
+                    "right": {
+                        "value": 1
+                    }
+                },
+                "then_branch": [
+                    {
+                        "expression": {
+                            "name_or_expr": "a"
+                        }
+                    }
+                ],
+                "else_branch": []
+            },
+            {
+                "name": "r",
+                "type": "INT",
+                "expression": {
+                    "name": "find_period",
+                    "args": [
+                        {
+                            "name_or_expr": "a"
+                        },
+                        {
+                            "name_or_expr": "N"
+                        }
+                    ]
+                },
+                "is_const": false
+            },
+            {
+                "condition": {
+                    "left": {
+                        "name": "mod",
+                        "args": [
+                            {
+                                "name_or_expr": "r"
+                            },
+                            {
+                                "value": 2
+                            }
+                        ]
+                    },
+                    "op": "NE",
+                    "right": {
+                        "value": 0
+                    }
+                },
+                "then_branch": [
+                    {
+                        "expression": {
+                            "value": 0
+                        }
+                    }
+                ],
+                "else_branch": []
+            },
+            {
+                "name": "x",
+                "type": "INT",
+                "expression": {
+                    "name": "powmod",
+                    "args": [
+                        {
+                            "name_or_expr": "a"
+                        },
+                        {
+                            "left": {
+                                "name_or_expr": "r"
+                            },
+                            "op": "DIVIDE",
+                            "right": {
+                                "value": 2
+                            }
+                        },
+                        {
+                            "name_or_expr": "N"
+                        }
+                    ]
+                },
+                "is_const": false
+            },
+            {
+                "condition": {
+                    "left": {
+                        "name_or_expr": "x"
+                    },
+                    "op": "EQ",
+                    "right": {
+                        "left": {
+                            "name_or_expr": "N"
+                        },
+                        "op": "MINUS",
+                        "right": {
+                            "value": 1
+                        }
+                    }
+                },
+                "then_branch": [
+                    {
+                        "expression": {
+                            "value": 0
+                        }
+                    }
+                ],
+                "else_branch": []
+            },
+            {
+                "name": "f1",
+                "type": "INT",
+                "expression": {
+                    "name": "gcd",
+                    "args": [
+                        {
+                            "left": {
+                                "name_or_expr": "x"
+                            },
+                            "op": "MINUS",
+                            "right": {
+                                "value": 1
+                            }
+                        },
+                        {
+                            "name_or_expr": "N"
+                        }
+                    ]
+                },
+                "is_const": false
+            },
+            {
+                "name": "f2",
+                "type": "INT",
+                "expression": {
+                    "name": "gcd",
+                    "args": [
+                        {
+                            "left": {
+                                "name_or_expr": "x"
+                            },
+                            "op": "PLUS",
+                            "right": {
+                                "value": 1
+                            }
+                        },
+                        {
+                            "name_or_expr": "N"
+                        }
+                    ]
+                },
+                "is_const": false
+            },
+            {
+                "expression": {
+                    "name_or_expr": "f1"
+                }
+            },
+            {
+                "expression": {
+                    "value": " "
+                }
+            },
+            {
+                "expression": {
+                    "name_or_expr": "f2"
+                }
+            },
+            {
+                "expression": {
+                    "value": 0
+                }
+            }
+        ]
+    },
+    {
+        "name": "hola",
+        "params": [],
+        "return_type": "int",
+        "body": [
+            {
+                "expression": {
+                    "name": "shor",
+                    "args": [
+                        {
+                            "value": 35
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "expression": {
+            "name": "hola",
+            "args": []
+        }
+    }
+]

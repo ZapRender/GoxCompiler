@@ -1,0 +1,25 @@
+// Programa con errores semánticos
+
+func mod(x int, y int) int {
+    return x - (x / y) * y;
+}
+
+func is_prime(n int) bool {  // Error: tipo de retorno incorrecto (debería ser 'bool')
+    if n < 2 {
+        return 0;  // Error: retorno tipo int en función que debe devolver bool
+    }
+    var i int = 2;
+    while i * i <= n {
+        if mod(n, i) == 0 {
+            return false;
+        }
+        i = i + 1;
+    }
+    return true;
+}
+
+print is_prime(7);
+
+var x bool = 10;  // Error: asignar int a bool
+
+y = 5;  // Error: variable no declarada
