@@ -29,11 +29,11 @@ class StackMachine:
         if args is None:
             args = []
 
-        # Guardar contexto actual si hay función en ejecución
+        # Guardar contexto actual sólo si hay función activa
         if self.current_func is not None:
             self.call_stack.append((self.current_func, self.locals, self.pc))
 
-        # Establecer nuevo contexto
+        # Iniciar nuevo contexto
         self.current_func = self.module.functions[func_name]
         self.locals = {}
         for name, val in zip(self.current_func.parmnames, args):
@@ -47,12 +47,13 @@ class StackMachine:
             self.execute(instr)
             self.pc += 1
 
-        # Restaurar contexto anterior
+        # Restaurar contexto anterior si existe
         if self.call_stack:
             self.current_func, self.locals, self.pc = self.call_stack.pop()
             self.running = True
         else:
             self.running = False  # Fin del programa
+
 
     def execute(self, instr):
         op = instr[0]
@@ -137,7 +138,7 @@ class StackMachine:
 
         elif op == 'PRINTI':
             val = self.stack.pop()
-            print(val, end='')
+            print(val, end='\n')
 
         elif op == 'PRINTB':
             val = self.stack.pop()
@@ -148,13 +149,16 @@ class StackMachine:
             self.stack.append(addr + 1)
 
         elif op == 'POKEI':
+            print(f"[DEBUG] Pila antes de POKEI: {self.stack}")
             val = self.stack.pop()
             addr = self.stack.pop()
             self.memory[addr] = val
+            print(f"[DEBUG] POKEI: Mem[{addr}] = {val}")
 
         elif op == 'PEEKI':
             addr = self.stack.pop()
             val = self.memory.get(addr, 0)
+            print(f"[DEBUG] PEEKI: Mem[{addr}] -> {val}")
             self.stack.append(val)
 
         elif op == 'IF':

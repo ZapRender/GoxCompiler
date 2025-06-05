@@ -20,12 +20,15 @@ def main():
         ast = generate_ast_json(source_code)
         checker = Checker.check(ast)
         if checker.errors:
+            print("Errores semánticos detectados, no se genera código intermedio.")
             sys.exit(1)
 
         # Generar IR
         module = IRCode.gencode(ast)
+        module.dump()
 
         # Ejecutar máquina de pila
+        print("[green]========================================")
         machine = StackMachine(module)
         machine.run_function('main')
     except SyntaxError as e:

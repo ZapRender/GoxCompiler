@@ -56,8 +56,6 @@ func shor(N int) int {
     return 0;
 }
 
-func hola() int {
+func main() int {
     return shor(35);   // Debería encontrar 3 y 5
 }
-
-print hola();

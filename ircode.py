@@ -321,44 +321,44 @@ class IRCode(Visitor):
             if isinstance(item, Variable):
                 module.add_global(item.name, _typemap.get(item.type, 'I'))
 
-        # Función real que contiene todo el código
-        func_actual_main = IRFunction(module, '_actual_main', [], [], 'I')
+        # Función main que contiene todo el código
+        func_main = IRFunction(module, 'main', [], [], 'I')
 
         # Código para inicializar variables globales
         for item in node:
             if isinstance(item, Variable):
-                item.accept(ircode, func_actual_main)
+                item.accept(ircode, func_main)
 
         # Código para funciones y demás sentencias globales
         for item in node:
             if not isinstance(item, Variable):
-                item.accept(ircode, func_actual_main)
+                item.accept(ircode, func_main)
 
-        func_actual_main.append(('RET',))
-
-        # Función main que sólo llama a _actual_main
-        func_main = IRFunction(module, 'main', [], [], 'I')
-        func_main.append(('CALL', '_actual_main'))
         func_main.append(('RET',))
 
         return module
 
-    def visit_Assignment(self, n: Assignment, func: IRFunction):
-        n.expression.accept(self, func)
 
-        if isinstance(n.location, NamedLocation):
-            name = n.location.name_or_expr
-            if name in func.locals:
-                func.append(('LOCAL_SET', name))
-            elif name in func.module.globals:
-                func.append(('GLOBAL_SET', name))
-            else:
-                func.append(('LOCAL_SET', name))
-        elif isinstance(n.location, MemoryLocation):
-            n.location.address.accept(self, func)
+    def visit_Assignment(self, n: Assignment, func: IRFunction):
+        if isinstance(n.location, MemoryLocation):
+            print(f"[DEBUG] Generando asignación indirecta a dirección")
+            n.location.address.accept(self, func)   # Apila la dirección primero
+            n.expression.accept(self, func)         # Apila el valor después
             func.append(('POKEI',))
         else:
-            raise Exception(f"Ubicación de asignación no soportada: {type(n.location)}")
+            n.expression.accept(self, func)
+            if isinstance(n.location, NamedLocation):
+                name = n.location.name_or_expr
+                if name in func.locals:
+                    func.append(('LOCAL_SET', name))
+                elif name in func.module.globals:
+                    func.append(('GLOBAL_SET', name))
+                else:
+                    func.append(('LOCAL_SET', name))
+            else:
+                raise Exception(f"Ubicación de asignación no soportada: {type(n.location)}")
+
+
 
     def visit_Print(self, n: Print, func: IRFunction):
         n.expression.accept(self, func)
