@@ -7,8 +7,7 @@ Este proyecto implementa el analizador sintáctico (parser) para el lenguaje **G
 
 ## Influencia de la Gramática PEG
 
-El parser se construyó tomando como base una **gramática PEG específica para GoxLang**, sin alterarla en ningún momento. Esto significó que el diseño del parser debía respetar al 100% la estructura impuesta por dicha gramática, incluyendo la obligatoriedad de llaves `{}` en funciones, el uso explícito del tipo de retorno, y la necesidad de `;` en cada instrucción.
-
+El parser se construyó tomando como base una **gramática PEG específica para GoxLang**, sin alterarla en ningún momento. Esto significó que el diseño del parser debía respetar al 100% la estructura impuesta por dicha gramática.
 ---
 
 ## Estructura y Lógica del Parser
@@ -40,9 +39,9 @@ Las clases del AST están definidas en el archivo `model.py`. Estas clases repre
 
 ## Problemas encontrados durante el desarrollo
 
-### Precedencia y errores de factor
+### Prioridad y errores en la parte de factor
 
-Inicialmente, al no validar bien los tokens en `factor()`, se generaban errores crípticos cuando un cast o llamada era ambigua. Se resolvió dando prioridad al reconocimiento de tipos antes que a funciones.
+Al principio, la función `factor()` no revisaba bien los tokens, así que cuando había un cast o una llamada a función que no estaba clara, salían errores difíciles de entender. Se arregló haciendo que primero se reconozcan los tipos antes que las funciones, para evitar esa confusión.
 
 ### Manejo de negativos
 
@@ -76,5 +75,11 @@ El parser ha sido probado exhaustivamente con funciones unitarias usando `unitte
 
 Este parser es un módulo sólido y estricto conforme a la gramática de GoxLang. Fue construido cuidadosamente para generar un AST usable y compatible con futuras etapas del compilador, como el análisis semántico o la generación de código.
 
-ejecutar parser: python -m parse.parse .\samples\factorize.gox
-ejecutar prueba unitaria:  python -m unittest .\test\test_parser.py
+Ejecutar parser: 
+```bash
+python -m parse.parse .\samples\factorize.gox
+```
+Ejecutar prueba unitaria:  
+```bash
+python -m unittest .\test\test_parser.py
+```
