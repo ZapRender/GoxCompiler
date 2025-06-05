@@ -341,7 +341,6 @@ class IRCode(Visitor):
 
     def visit_Assignment(self, n: Assignment, func: IRFunction):
         if isinstance(n.location, MemoryLocation):
-            print(f"[DEBUG] Generando asignación indirecta a dirección")
             n.location.address.accept(self, func)   # Apila la dirección primero
             n.expression.accept(self, func)         # Apila el valor después
             func.append(('POKEI',))
@@ -361,11 +360,21 @@ class IRCode(Visitor):
 
 
     def visit_Print(self, n: Print, func: IRFunction):
-        n.expression.accept(self, func)
-        if isinstance(n.expression, Char):
-            func.append(('PRINTB',))
-        else:
+
+        if isinstance(n.expression, NamedLocation) and not isinstance(n.expression.name_or_expr, str):
+            n.expression.accept(self, func)
+            func.append(('PEEKI',))
             func.append(('PRINTI',))
+        else:
+            n.expression.accept(self, func)
+            if isinstance(n.expression, Char):
+                func.append(('PRINTB',))
+            else:
+                func.append(('PRINTI',))
+
+
+
+
 
     def visit_If(self, n: If, func: IRFunction):
         n.condition.accept(self, func)
@@ -396,17 +405,19 @@ class IRCode(Visitor):
         func.append(('RET',))
 
     def visit_Variable(self, n: Variable, func: IRFunction):
-        # Sólo variables locales declaradas con var dentro de funciones
-        if func.name != '_actual_main':
+    # Si es global (está en módulo), usar GLOBAL_SET
+        if n.name in func.module.globals:
+            if n.expression:
+                n.expression.accept(self, func)
+                func.append(('GLOBAL_SET', n.name))
+        else:
+            # Local
             func.new_local(n.name, _typemap.get(n.type, 'I'))
             if n.expression:
                 n.expression.accept(self, func)
                 func.append(('LOCAL_SET', n.name))
-        else:
-            # Variables globales se inicializan en _actual_main
-            if n.expression:
-                n.expression.accept(self, func)
-                func.append(('GLOBAL_SET', n.name))
+
+
 
     def visit_Function(self, n: Function, func: IRFunction):
         module = func.module
@@ -487,6 +498,7 @@ class IRCode(Visitor):
         func.append(('CALL', n.name))
 
     def visit_NamedLocation(self, n: NamedLocation, func: IRFunction):
+        
         if isinstance(n.name_or_expr, str):
             if n.name_or_expr in func.locals:
                 func.append(('LOCAL_GET', n.name_or_expr))
@@ -496,6 +508,7 @@ class IRCode(Visitor):
                 func.append(('LOCAL_GET', n.name_or_expr))
         else:
             n.name_or_expr.accept(self, func)
+
 
     def visit_MemoryLocation(self, n: MemoryLocation, func: IRFunction):
         n.address.accept(self, func)
@@ -524,6 +537,10 @@ def main(filename):
     except SyntaxError as e:
         print(f"Error de sintaxis: {e}")
         sys.exit(66)
+    
+    except Exception as e:
+        print(f"[red]Error durante la generación de código IR: {e}")
+        sys.exit(1)
     
 
 if __name__ == "__main__":

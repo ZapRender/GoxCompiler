@@ -149,16 +149,13 @@ class StackMachine:
             self.stack.append(addr + 1)
 
         elif op == 'POKEI':
-            print(f"[DEBUG] Pila antes de POKEI: {self.stack}")
             val = self.stack.pop()
             addr = self.stack.pop()
             self.memory[addr] = val
-            print(f"[DEBUG] POKEI: Mem[{addr}] = {val}")
 
         elif op == 'PEEKI':
             addr = self.stack.pop()
             val = self.memory.get(addr, 0)
-            print(f"[DEBUG] PEEKI: Mem[{addr}] -> {val}")
             self.stack.append(val)
 
         elif op == 'IF':
