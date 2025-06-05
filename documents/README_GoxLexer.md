@@ -31,7 +31,7 @@ Inspirado en el uso de `enum class` del libro, utilicé un enfoque similar en Py
 
 En este archivo se encuentra la clase principal `Gox`, encargada de iniciar y controlar el escaneo.
 
-#### 🔍 Método `_runFile`
+#### Método `_runFile`
 
 Este método abre el archivo en **modo lectura binaria (`rb`)**, decodificando luego el contenido en una cadena de caracteres.  
 Aunque inicialmente utilicé este enfoque para seguir el libro, descubrí que este modo asegura la lectura exacta de los bytes. Aun así, algunos foros recomiendan utilizar `rb` solamente con archivos binarios, no con archivos de texto. ¡Algo a considerar!
