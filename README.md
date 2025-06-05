@@ -2,7 +2,7 @@
 
 ## Descripción General
 
-Este proyecto es un compilador para el lenguaje de programación **GoxLang**, diseñado como un lenguaje educativo con características clave para aprendizaje de compiladores. El compilador convierte el código fuente escrito en GoxLang en un código intermedio (IR) y lo ejecuta sobre una máquina virtual basada en una máquina de pila (stack machine).
+Este proyecto es un compilador para el lenguaje de programación **GoxLang**. El compilador convierte el código fuente escrito en GoxLang en un código intermedio (IR) y lo ejecuta sobre una máquina virtual basada en una máquina de pila (stack machine).
 
 ---
 
@@ -70,15 +70,6 @@ GoxCompiler/
 
 ---
 
-## Características Destacadas
-
-- **Acceso a memoria indirecta**: Permite manejar punteros y manipular memoria simulada, lo que habilita estructuras como arreglos y tablas.
-- **Control de flujo estructurado**: Soporta `if`, `while`, y estructuras similares.
-- **Manejo de variables locales y globales**: Diferenciación clara en IR y ejecución.
-- **Soporte para funciones y llamadas recursivas**.
-
----
-
 ## Archivos Clave
 
 - `ircode.py`: Genera el código intermedio (IR) a partir del AST.
@@ -101,16 +92,7 @@ python main samples/program.gox
 
 ---
 
-## Notas Técnicas
-
-- La máquina de pila utiliza una pila para valores temporales y un diccionario simulado para memoria.
-- El IR está basado en instrucciones simples con un formato tuple `(INSTRUCTION, ARG1, ARG2, ...)`.
-- Acceso a memoria indirecta se realiza con instrucciones `POKEI` y `PEEKI`.
-- Variables globales y locales se gestionan mediante instrucciones `GLOBAL_GET/SET` y `LOCAL_GET/SET`.
-
----
-
 ## Problemas actuales
 
-- Actualmente se tiene un inconveniente con la asignacion de memoria en el codigo intermedio.
+- Actualmente se tiene un inconveniente con la asignación de memoria.
 
