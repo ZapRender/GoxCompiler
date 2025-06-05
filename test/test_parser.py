@@ -77,7 +77,7 @@ class TestParser(unittest.TestCase):
         self.assertIsInstance(func, Function)
         self.assertEqual(func.name, "sum")
         self.assertEqual(len(func.params), 2)
-        self.assertEqual(func.return_type, "INT")
+        self.assertEqual(func.return_type, "int")
 
     # ----------------------------
     # Error cases
@@ -133,7 +133,7 @@ class TestParser(unittest.TestCase):
         self.assertIsInstance(func, Function)
         self.assertEqual(func.name, "external")
         self.assertEqual(len(func.params), 1)
-        self.assertEqual(func.return_type, "INT")
+        self.assertEqual(func.return_type, "int")
 
     def test_type_cast_expression(self):
         source = "print int(3.5);"
