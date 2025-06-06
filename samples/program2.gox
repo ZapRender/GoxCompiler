@@ -1,0 +1,15 @@
+const size = 5;
+const base = ^(size);
+
+var i int = 0;
+while i < size {
+    `(base + i) = i * 2;  // Guardar valores 0,2,4,6,8
+    i = i + 1;
+}
+
+i = 0;
+while i < size {
+    print `(base + i);  // Imprime valores guardados: 0 2 4 6 8
+    i = i + 1;
+}
+

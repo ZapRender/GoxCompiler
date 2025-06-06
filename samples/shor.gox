@@ -51,7 +51,7 @@ func shor(N int) int {
 
     var f1 int = gcd(x - 1, N);
     var f2 int = gcd(x + 1, N);
-    print f1; print ' ';  // Imprime espacio
+    print f1;  // Imprime espacio
     print f2;
     return 0;
 }

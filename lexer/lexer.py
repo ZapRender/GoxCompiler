@@ -6,12 +6,12 @@ class Gox:
         self.had_error = False
 
     def _run(self, content: str):
-        scanner = Scanner(content, self.errorHandler)
+        scanner = Scanner(content, self.error_handler)
         tokens = scanner.scan_tokens()
 
         # print the tokens
         for token in tokens:
-            print(token.toString())
+            print(token.to_string())
 
         if scanner.had_error:
             self.had_error = True
